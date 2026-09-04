@@ -1,0 +1,19 @@
+:root {
+  --paper: #f4efe6;
+  --ink: #1a1917;
+  --rule: #d8d0c2;
+  --muted: #6f685c;
+  --cio: #1f6f5f;
+  --vidyard: #7a5c1e;
+  --personal: #b8432f;
+  --ai: #2b2b2b;
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --measure: 62ch;
+}
+html { background: var(--paper); color: var(--ink); font-family: var(--serif); font-size: 17px; line-height: 1.5; }
+body { margin: 0; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.mono { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.01em; }
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 0; }

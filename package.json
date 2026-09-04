@@ -1,0 +1,26 @@
+{
+  "name": "shub.ca",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "pulse": "node scripts/pulse.mjs",
+    "test": "node --test scripts/ && npm run test:unit",
+    "test:unit": "node --experimental-strip-types --test src/lib/",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "astro": "^7.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@playwright/test": "^1.62.1",
+    "@rollup/plugin-yaml": "^4.1.2",
+    "typescript": "^5.9.0"
+  }
+}
