@@ -1,0 +1,12 @@
+---
+interface Props { refreshed: string }
+const { refreshed } = Astro.props;
+const date = refreshed.slice(0, 10);
+---
+<footer class="wrap mono">
+  <hr />
+  <p>Set in Newsreader and JetBrains Mono. Built with Astro. Pulse data from GitHub, refreshed {date}. <a href="https://github.com/shubsengupta/shubsengupta.github.io">Source</a>.</p>
+</footer>
+<style>
+  footer p { color: var(--muted); padding: 1.5rem 0 3rem; margin: 0; }
+</style>

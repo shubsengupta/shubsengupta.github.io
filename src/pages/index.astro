@@ -1,11 +1,67 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
+import Masthead from '../components/Masthead.astro';
+import Pulse from '../components/Pulse.astro';
+import Section from '../components/Section.astro';
+import Footer from '../components/Footer.astro';
+import pulse from '../data/pulse.json';
+import projects from '../data/projects.yaml';
+import { getCollection } from 'astro:content';
+import type { PulseData } from '../lib/pulse';
+
+type Project = { name: string; year: number; url: string; blurb: string };
+const data = pulse as PulseData;
+const list = projects as Project[];
+const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shub Sengupta</title>
-  </head>
-  <body><div class="wrap"><h1>Shub Sengupta</h1></div></body>
-</html>
+<Base title="Shub Sengupta">
+  <Masthead />
+  <Pulse data={data} />
+
+  <Section n="01" title="Who" id="who">
+    <p>I'm an engineering manager at <a href="https://customer.io">Customer.io</a>, where I lead the team building Design Studio, the editor people use to make email, in-app and push content. Before that I spent a long stretch at Vidyard.</p>
+    <p>I live in Toronto. I write a lot of code for someone who manages people, most of it lately with an AI pair. The chart above is the honest record.</p>
+    <ul class="mono links">
+      <li><a href="https://github.com/shubsengupta">github.com/shubsengupta</a></li>
+      <li><a href="https://www.linkedin.com/in/shubsengupta">linkedin.com/in/shubsengupta</a></li>
+      <li><a href="mailto:hi@shub.ca">hi@shub.ca</a></li>
+    </ul>
+  </Section>
+
+  <Section n="02" title="What" id="what">
+    <h3 class="mono sub">Now</h3>
+    <p>Design Studio at Customer.io: a visual editor with an agent inside it that can fix your template, match your brand, and explain why a draft is unpublished. My job is to make the team that builds it fast, and the product that comes out of it boring to rely on.</p>
+    <h3 class="mono sub">Side projects</h3>
+    <ul class="projects">
+      {list.map((p) => (
+        <li>
+          <span class="mono year">{p.year}</span>
+          <span><a href={p.url}>{p.name}</a> <span class="blurb">{p.blurb}</span></span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section n="03" title="Writing" id="writing">
+    {posts.length === 0 ? (
+      <p class="mono empty">nothing here yet</p>
+    ) : (
+      <ul class="posts">
+        {posts.map((p) => (
+          <li><span class="mono year">{p.data.date.toISOString().slice(0, 10)}</span> <a href={`/writing/${p.id}/`}>{p.data.title}</a></li>
+        ))}
+      </ul>
+    )}
+  </Section>
+
+  <Footer refreshed={data.generatedAt} />
+</Base>
+<style>
+  .links li { margin: 0.2rem 0; }
+  .sub { margin: 1.25rem 0 0.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .sub:first-child { margin-top: 0; }
+  .projects li, .posts li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.75rem; margin: 0.4rem 0; }
+  .year { color: var(--muted); padding-top: 0.25rem; }
+  .blurb { color: var(--muted); }
+  .empty { color: var(--muted); }
+</style>

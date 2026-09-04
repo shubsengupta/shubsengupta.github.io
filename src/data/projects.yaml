@@ -1,0 +1,16 @@
+- name: l2claude
+  year: 2026
+  url: https://github.com/shubsengupta/l2claude
+  blurb: A daily AI-build challenge site. Astro, Vercel, Claude drafts the tasks.
+- name: co
+  year: 2026
+  url: https://github.com/shubsengupta/co
+  blurb: A small Go CLI for the things I type too often.
+- name: practation
+  year: 2015
+  url: https://github.com/shubsengupta/practation
+  blurb: Smart queue cards that help you ace a presentation.
+- name: twitterwall
+  year: 2014
+  url: https://github.com/shubsengupta/twitterwall
+  blurb: A conference twitter wall with schedule and notices. Became confwall.com.

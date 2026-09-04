@@ -2,7 +2,9 @@ import { execSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const SEARCH_MIN_GAP_MS = 2100; // 30 req/min
+const SEARCH_MIN_GAP_MS = 3000;
+const MAX_RESULTS = 1000;
+export class TooManyResults extends Error {}
 
 export function resolveToken() {
   if (process.env.PULSE_TOKEN) return process.env.PULSE_TOKEN;
@@ -13,8 +15,14 @@ export function createClient({ token, fetchImpl = fetch, sleep = (ms) => new Pro
   let lastSearch = 0;
   const headers = { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'user-agent': 'shub.ca-pulse' };
 
-  async function rest(path) {
+  async function rest(path, attempt = 0) {
     const res = await fetchImpl(`https://api.github.com${path}`, { headers });
+    if ((res.status === 403 || res.status === 429) && attempt < 4) {
+      const retryAfter = Number(res.headers.get('retry-after')) || 60 * (attempt + 1);
+      process.stderr.write(`rate limited, sleeping ${retryAfter}s\n`);
+      await sleep(retryAfter * 1000);
+      return rest(path, attempt + 1);
+    }
     if (!res.ok) throw new Error(`GitHub ${res.status} for ${path}: ${await res.text()}`);
     return res.json();
   }
@@ -27,6 +35,7 @@ export function createClient({ token, fetchImpl = fetch, sleep = (ms) => new Pro
       lastSearch = Date.now();
       const q = encodeURIComponent(`author:shubsengupta ${scope} committer-date:${window.from}..${window.to}`);
       const data = await rest(`/search/commits?q=${q}&per_page=100&page=${page}`);
+      if (data.total_count > MAX_RESULTS) throw new TooManyResults(`${scope} ${window.from}..${window.to}: ${data.total_count}`);
       items.push(...data.items.map((i) => ({ commit: { message: i.commit.message, author: { date: i.commit.author.date } } })));
       if (items.length >= data.total_count || data.items.length === 0) break;
     }
@@ -53,7 +62,14 @@ export function createFixtureClient(dir) {
   return {
     async searchCommits(scope, window) {
       const key = scope.startsWith('org:') ? 'cio' : 'personal';
-      try { return await read(`search-${key}-${window.from.slice(0, 7)}`); } catch { return []; }
+      const { readdir } = await import('node:fs/promises');
+      const names = (await readdir(dir)).filter((n) => n.startsWith(`search-${key}-`));
+      const out = [];
+      for (const n of names) {
+        const month = n.slice(`search-${key}-`.length, -5);
+        if (month >= window.from.slice(0, 7) && month <= window.to.slice(0, 7)) out.push(...(await read(n.slice(0, -5))));
+      }
+      return out;
     },
     async calendar(year) {
       try { return await read(`calendar-${year}`); } catch { return {}; }

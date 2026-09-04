@@ -1,0 +1,21 @@
+---
+interface Props { n: string; title: string; id: string }
+const { n, title, id } = Astro.props;
+---
+<section class="sec wrap" id={id} aria-labelledby={`${id}-h`}>
+  <div class="gutter mono">{n}</div>
+  <div class="body">
+    <h2 id={`${id}-h`} class="mono">{title}</h2>
+    <slot />
+  </div>
+</section>
+<style>
+  .sec { display: grid; grid-template-columns: 4rem 1fr; gap: 0 1.5rem; padding: 2.25rem 1.5rem; border-top: 1px solid var(--rule); }
+  .gutter { color: var(--muted); padding-top: 0.2rem; }
+  h2 { margin: 0 0 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .body { max-width: var(--measure); }
+  .body :global(p) { margin: 0 0 1rem; }
+  .body :global(p:last-child) { margin-bottom: 0; }
+  .body :global(ul) { padding: 0; margin: 0; list-style: none; }
+  @media (max-width: 40rem) { .sec { grid-template-columns: 1fr; gap: 0.5rem; } }
+</style>

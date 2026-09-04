@@ -3,7 +3,9 @@
   "type": "module",
   "version": "2.0.0",
   "private": true,
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
@@ -21,6 +23,7 @@
     "@astrojs/check": "^0.9.9",
     "@playwright/test": "^1.62.1",
     "@rollup/plugin-yaml": "^4.1.2",
+    "@types/node": "^26.4.1",
     "typescript": "^5.9.0"
   }
 }

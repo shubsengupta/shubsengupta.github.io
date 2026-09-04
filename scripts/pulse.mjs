@@ -2,11 +2,11 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { parseArgs } from 'node:util';
-import { monthWindows } from './lib/windows.mjs';
+import { monthWindows, quarterWindows, yearWindows } from './lib/windows.mjs';
 import { bucketCommits } from './lib/bucket.mjs';
 import { applyEra } from './lib/era.mjs';
 import { mergeDays } from './lib/merge.mjs';
-import { createClient, createFixtureClient, resolveToken } from './lib/github.mjs';
+import { createClient, createFixtureClient, resolveToken, TooManyResults } from './lib/github.mjs';
 
 const CUTOVER = '2025-12-03';
 const ACCOUNT_START = '2012-04-16';
@@ -49,18 +49,35 @@ async function main() {
   const from = args.from ?? (full ? ACCOUNT_START : shift(to, -INCREMENTAL_DAYS));
   const client = args.fixture ? createFixtureClient(args.fixture) : createClient({ token: resolveToken() });
 
-  const fresh = {};
-  for (const window of monthWindows(from, to)) {
-    const cio = bucketCommits(await client.searchCommits('org:customerio', window));
-    const personal = bucketCommits(await client.searchCommits('user:shubsengupta', window));
-    for (const day of new Set([...Object.keys(cio), ...Object.keys(personal)])) {
-      fresh[day] = {
-        cio: cio[day]?.count ?? 0,
-        personal: personal[day]?.count ?? 0,
-        ai: (cio[day]?.ai ?? 0) + (personal[day]?.ai ?? 0),
-      };
+  // Search caps at 1000 results per query, so window size is per scope:
+  // personal history is sparse (years), Customer.io is dense (quarters).
+  // A window that overflows is split into months.
+  async function collect(scope, wins) {
+    const days = {};
+    for (const window of wins) {
+      let items;
+      try {
+        items = await client.searchCommits(scope, window);
+      } catch (e) {
+        if (!(e instanceof TooManyResults)) throw e;
+        items = [];
+        for (const m of monthWindows(window.from, window.to)) items.push(...(await client.searchCommits(scope, m)));
+      }
+      Object.assign(days, bucketCommits(items));
+      process.stderr.write(`${scope} ${window.from}..${window.to} ${items.length} commits\n`);
     }
-    process.stderr.write(`${window.from}..${window.to} cio=${Object.keys(cio).length}d personal=${Object.keys(personal).length}d\n`);
+    return days;
+  }
+
+  const cio = await collect('org:customerio', quarterWindows(from > CUTOVER ? from : CUTOVER, to));
+  const personal = await collect('user:shubsengupta', yearWindows(from, to));
+  const fresh = {};
+  for (const day of new Set([...Object.keys(cio), ...Object.keys(personal)])) {
+    fresh[day] = {
+      cio: cio[day]?.count ?? 0,
+      personal: personal[day]?.count ?? 0,
+      ai: (cio[day]?.ai ?? 0) + (personal[day]?.ai ?? 0),
+    };
   }
 
   const calendar = {};
