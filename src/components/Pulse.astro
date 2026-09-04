@@ -1,5 +1,5 @@
 ---
-import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, modelSegments, modelFamily, type PulseData, type SourceKey } from '../lib/pulse';
+import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, type PulseData, type SourceKey } from '../lib/pulse';
 import cioMark from '../assets/brand/customerio.svg?raw';
 import claudeMark from '../assets/brand/claude.svg?raw';
 interface Props { data: PulseData }
@@ -28,19 +28,6 @@ const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom 
 const weekdays = [{ row: 1, t: 'M' }, { row: 3, t: 'W' }, { row: 5, t: 'F' }];
 const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="${w.row * STEP + CELL - 2}">${w.t}</text>`).join('');
 
-function modelBand(y: number, colFrom: number, colTo: number): string {
-  return modelSegments(data, y, colFrom, colTo)
-    .filter((seg) => seg.top)
-    .map((seg) => {
-      const x = seg.colFrom * STEP;
-      const w = (seg.colTo - seg.colFrom + 1) * STEP - GAP;
-      const minW = colTo - colFrom < 52 ? 72 : 40; // half-year strips render at roughly half the pixels
-      const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
-      const title = seg.breakdown.map(([m, n]) => `${m}: ${n}`).join(', ');
-      return `<g class="seg ${modelFamily(seg.top!)}" data-month="${seg.month}"><title>${seg.month}: ${title}</title><rect x="${x}" y="0" width="${w}" height="14" rx="3"/>${label}</g>`;
-    })
-    .join('');
-}
 ---
 <section class="pulse wrap" aria-label="GitHub activity" data-years={years.join(',')}>
   <div class="head">
@@ -77,7 +64,6 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
         tabindex={c.id === 'full' ? 0 : -1}
         set:html={dayLabels + renderGrid(data, year, hidden, { cell: CELL, gap: GAP, colFrom: c.colFrom, colTo: c.colTo })}
       />
-      <svg class="models mono" viewBox={`${-GUTTER} 0 ${widthOf(c) + GUTTER} 14`} width="100%" aria-label="Claude model paired with, by month" set:html={`<text class="dow" x="${-GUTTER + 4}" y="10">AI</text>` + modelBand(year, c.colFrom, c.colTo)} />
     </div>
   ))}
 
@@ -96,7 +82,7 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
     {totals.map((t) => (
       <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} contributions`}>
         <span class="bar" aria-hidden="true">
-          {(['personal', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
+          {(['agent', 'personal', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
             <i data-source={k} style={`height:${Math.round(((t.by[k] ?? 0) / maxYear) * 100)}%`}></i>
           ))}
         </span>
@@ -105,11 +91,11 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Ticks under the baseline mark days with pull requests built with Claude Code. The band below names the Claude model used most each month. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Pull requests built with Claude Code stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
 </section>
 
 <script>
-  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, modelSegments, modelFamily, type PulseData, type SourceKey } from '../lib/pulse';
+  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, type PulseData, type SourceKey } from '../lib/pulse';
   import data from '../data/pulse.json';
 
   const d = data as PulseData;
@@ -123,7 +109,6 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
   const STEP = CELL + GAP;
   const strips = [...root.querySelectorAll<HTMLElement>('.strip')];
   const dayLabels = [...root.querySelector('.grid')!.querySelectorAll('.dow')].map((t) => t.outerHTML).join('');
-  const bandLabel = root.querySelector('.models .dow')!.outerHTML;
   let idx = 0;
   const hidden = new Set<SourceKey>();
   let pinned: string | null = null;
@@ -132,20 +117,6 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
   const clearFocus = () => root.querySelectorAll('.focus').forEach((el) => el.classList.remove('focus'));
   const markFocus = (date: string) => root.querySelectorAll(`.day[data-date="${date}"]`).forEach((el) => el.classList.add('focus'));
   const show = (date: string) => { out.textContent = readout(d, date); };
-
-  function modelBand(y: number, colFrom: number, colTo: number): string {
-    return modelSegments(d, y, colFrom, colTo)
-      .filter((seg) => seg.top)
-      .map((seg) => {
-        const x = seg.colFrom * STEP;
-        const w = (seg.colTo - seg.colFrom + 1) * STEP - GAP;
-        const minW = colTo - colFrom < 52 ? 72 : 40; // half-year strips render at roughly half the pixels
-        const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
-        const title = seg.breakdown.map(([m, n]) => `${m}: ${n}`).join(', ');
-        return `<g class="seg ${modelFamily(seg.top!)}" data-month="${seg.month}"><title>${seg.month}: ${title}</title><rect x="${x}" y="0" width="${w}" height="14" rx="3"/>${label}</g>`;
-      })
-      .join('');
-  }
 
   function placeTip(date: string, anchor: Element) {
     const rows = dayRows(d, date);
@@ -171,7 +142,6 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
       grid.classList.remove('enter');
       grid.innerHTML = dayLabels + renderGrid(d, year, hidden, { cell: CELL, gap: GAP, colFrom, colTo });
       st.querySelector('.months')!.innerHTML = monthLabels(year, colFrom, colTo).map((m) => `<text x="${m.col * STEP}" y="10">${m.label}</text>`).join('');
-      st.querySelector('.models')!.innerHTML = bandLabel + modelBand(year, colFrom, colTo);
     }
     yearEl.textContent = String(year);
     root.querySelectorAll<HTMLButtonElement>('.step').forEach((b) => {
@@ -291,7 +261,7 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
   .months { display: block; margin-bottom: 2px; overflow: visible; }
   .months :global(text) { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
   .grid { display: block; outline: none; overflow: visible; border-radius: var(--r-s); }
-  .grid :global(.dow), .models :global(.dow) { font-size: 8.5px; fill: var(--faint); font-family: var(--mono); }
+  .grid :global(.dow) { font-size: 8.5px; fill: var(--faint); font-family: var(--mono); }
   .grid :global(.bg) { fill: var(--surface); }
   .grid :global(.bg.future) { fill: transparent; }
   .grid :global(.baseline) { stroke: var(--ink); stroke-width: 1; opacity: 0.4; }
@@ -299,20 +269,9 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
   .grid :global(.day:hover .bg), .grid :global(.day.focus .bg) { fill: var(--surface-2); stroke: var(--ink); stroke-width: 1; }
   .grid :global(.day) { cursor: crosshair; }
 
-  .models { display: block; margin-top: 4px; overflow: visible; }
-  .models :global(.seg rect) { fill: var(--surface); }
-  .models :global(.seg text) { font-size: 8.5px; font-family: var(--mono); fill: var(--ink); }
-  .models :global(.seg.fable rect) { fill: var(--agent); }
-  .models :global(.seg.fable text) { fill: #fff; }
-  .models :global(.seg.opus rect) { fill: #efc2ad; }
-  .models :global(.seg.sonnet rect) { fill: #f6dccf; }
-  .models :global(.seg.haiku rect) { fill: #f9e9e0; }
-
   /* One orchestrated entrance: bars rise from the baseline, staggered by week. */
   .grid.enter :global(rect[data-source]) { transform-box: fill-box; transform-origin: bottom; animation: rise 520ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--c, 0) * 9ms); }
-  .grid.enter :global(.ai) { animation: fade 400ms ease both; animation-delay: calc(var(--c, 0) * 9ms + 300ms); }
   @keyframes rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
   .tip[hidden] { display: none; }
   .tip { position: absolute; top: 0; left: 0; z-index: 2; pointer-events: none; background: var(--ink); color: var(--bg); padding: 0.5rem 0.65rem; border-radius: var(--r-m); display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.7rem; box-shadow: 0 6px 18px rgba(16, 24, 32, 0.18); white-space: nowrap; }
@@ -341,6 +300,7 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
   .bar i[data-source="cio"] { background: var(--cio); }
   .bar i[data-source="vidyard"] { background: var(--vidyard); }
   .bar i[data-source="personal"] { background: var(--personal); }
+  .bar i[data-source="agent"] { background: var(--agent); }
   .lbl { text-align: center; color: var(--faint); font-size: 0.66rem; }
 
   @media (max-width: 40rem) {
@@ -348,18 +308,18 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
     .strip-a, .strip-b { display: block; }
     .strip-b { margin-top: 0.9rem; }
     .months :global(text) { font-size: 11px; }
-    .grid :global(.dow), .models :global(.dow) { font-size: 10px; }
-    .models :global(.seg text) { font-size: 10px; }
+    .grid :global(.dow) { font-size: 10px; }
     .legend { gap: 0.3rem; }
     .src { font-size: 0.76rem; padding: 0.2rem 0.6rem 0.2rem 0.3rem; }
     .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .yr { min-width: 1rem; }
-    .career { gap: 0.25rem; }
+    .yr { min-width: 0; padding: 0.2rem 0.05rem; overflow: hidden; }
+    .lbl { font-size: 0.55rem; }
+    .career { gap: 0.2rem; overflow-x: visible; }
     .tip { display: none; }
   }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   @media (prefers-reduced-motion: reduce) {
     .grid :global(.day rect), .src, .readout, .yr { transition: none; }
-    .grid.enter :global(rect[data-source]), .grid.enter :global(.ai) { animation: none; }
+    .grid.enter :global(rect[data-source]) { animation: none; }
   }
 </style>

@@ -33,14 +33,15 @@ test('career strip picks a year and tooltip follows hover', async ({ page }) => 
   await expect(page.locator('#pulse-tip')).toContainText('Vidyard');
 });
 
-test('agent signals: stats, tick lane and model band', async ({ page }) => {
+test('agent signals: stats and stacked agent layer', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#st-prs')).not.toHaveText('0');
   await expect(page.locator('#st-agent')).toContainText('%');
-  await expect(page.locator('#pulse-svg .ai').first()).toBeAttached();
-  await expect(page.locator('.strip-full .models .seg').first()).toBeAttached();
+  await expect(page.locator('#pulse-svg [data-source="agent"]').first()).toBeAttached();
+  await page.locator('#pulse-svg .day:has([data-source="agent"])').last().hover();
+  await expect(page.locator('#pulse-tip')).toContainText(/built with (Fable|Opus|Sonnet|Claude)/);
   await page.locator('.src[data-source="agent"]').click();
-  await expect(page.locator('#pulse-svg .ai')).toHaveCount(0);
+  await expect(page.locator('#pulse-svg [data-source="agent"]')).toHaveCount(0);
 });
 
 test('writing is wired but empty', async ({ page }) => {

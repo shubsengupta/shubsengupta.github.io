@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-04T19:18:42.568Z",
+ "generatedAt": "2026-09-04T19:45:30.031Z",
  "cutover": "2025-12-03",
  "sources": {
   "cio": {
@@ -3424,7 +3424,8 @@
   "2025-12-22": {
    "cio": 3,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Sonnet 4.5"
   },
   "2025-12-23": {
    "cio": 4,
@@ -3598,7 +3599,8 @@
   },
   "2026-03-19": {
    "cio": 4,
-   "prs": 1
+   "prs": 1,
+   "model": "Opus 4.6"
   },
   "2026-03-25": {
    "cio": 5,
@@ -3611,12 +3613,14 @@
   "2026-03-31": {
    "cio": 6,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.6"
   },
   "2026-04-01": {
    "cio": 4,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Opus 4.6"
   },
   "2026-04-02": {
    "cio": 1
@@ -3624,30 +3628,36 @@
   "2026-04-06": {
    "cio": 6,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.6"
   },
   "2026-04-07": {
    "cio": 6,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.6"
   },
   "2026-04-09": {
-   "cio": 1
+   "cio": 1,
+   "model": "Opus 4.6"
   },
   "2026-04-10": {
    "cio": 3,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Opus 4.6"
   },
   "2026-04-13": {
    "cio": 6,
    "prs": 4,
-   "agent": 4
+   "agent": 4,
+   "model": "Opus 4.6"
   },
   "2026-04-14": {
    "cio": 9,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.6"
   },
   "2026-04-15": {
    "cio": 1
@@ -3660,7 +3670,8 @@
   "2026-04-17": {
    "cio": 9,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Opus 4.6"
   },
   "2026-04-20": {
    "cio": 4,
@@ -3678,20 +3689,24 @@
   "2026-04-27": {
    "cio": 10,
    "prs": 9,
-   "agent": 9
+   "agent": 9,
+   "model": "Opus 4.7"
   },
   "2026-04-28": {
    "cio": 3,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Opus 4.7"
   },
   "2026-04-29": {
    "cio": 3,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Opus 4.7"
   },
   "2026-05-01": {
-   "cio": 2
+   "cio": 2,
+   "model": "Opus 4.7"
   },
   "2026-05-04": {
    "cio": 4
@@ -3699,7 +3714,8 @@
   "2026-05-05": {
    "cio": 4,
    "prs": 5,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.7"
   },
   "2026-05-07": {
    "cio": 5,
@@ -3708,7 +3724,8 @@
   },
   "2026-05-08": {
    "cio": 7,
-   "prs": 1
+   "prs": 1,
+   "model": "Opus 4.7"
   },
   "2026-05-12": {
    "cio": 1
@@ -3723,12 +3740,14 @@
   "2026-05-22": {
    "cio": 11,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.7"
   },
   "2026-05-25": {
    "cio": 3,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Opus 4.7"
   },
   "2026-05-26": {
    "cio": 3,
@@ -3742,7 +3761,8 @@
   },
   "2026-05-28": {
    "cio": 4,
-   "prs": 1
+   "prs": 1,
+   "model": "Opus 4.7"
   },
   "2026-06-10": {
    "cio": 1,
@@ -3751,7 +3771,8 @@
   "2026-06-11": {
    "cio": 4,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Opus 4.8"
   },
   "2026-06-12": {
    "cio": 5,
@@ -3781,22 +3802,26 @@
   "2026-06-23": {
    "cio": 3,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Opus 4.8"
   },
   "2026-06-24": {
    "cio": 7,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.8"
   },
   "2026-06-25": {
    "cio": 5,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Opus 4.8"
   },
   "2026-06-29": {
    "cio": 5,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Opus 4.8"
   },
   "2026-06-30": {
    "cio": 2
@@ -3809,16 +3834,19 @@
   "2026-07-03": {
    "cio": 13,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Sonnet 5"
   },
   "2026-07-04": {
    "cio": 1,
-   "personal": 4
+   "personal": 4,
+   "model": "Sonnet 5"
   },
   "2026-07-06": {
    "cio": 9,
    "prs": 5,
-   "agent": 5
+   "agent": 5,
+   "model": "Sonnet 5"
   },
   "2026-07-07": {
    "cio": 8,
@@ -3828,32 +3856,38 @@
   "2026-07-08": {
    "cio": 9,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Fable 5"
   },
   "2026-07-09": {
    "cio": 9,
    "prs": 4,
-   "agent": 2
+   "agent": 2,
+   "model": "Fable 5"
   },
   "2026-07-10": {
    "cio": 5,
    "prs": 3,
-   "agent": 2
+   "agent": 2,
+   "model": "Fable 5"
   },
   "2026-07-13": {
    "cio": 8,
    "prs": 5,
-   "agent": 4
+   "agent": 4,
+   "model": "Sonnet 5"
   },
   "2026-07-14": {
    "cio": 10,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Sonnet 5"
   },
   "2026-07-15": {
    "cio": 6,
    "prs": 5,
-   "agent": 5
+   "agent": 5,
+   "model": "Sonnet 5"
   },
   "2026-07-16": {
    "cio": 3,
@@ -3871,25 +3905,30 @@
   "2026-07-20": {
    "cio": 4,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Sonnet 5"
   },
   "2026-07-21": {
-   "cio": 2
+   "cio": 2,
+   "model": "Fable 5"
   },
   "2026-07-22": {
    "cio": 3,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Opus 4.8"
   },
   "2026-07-23": {
    "cio": 10,
    "prs": 4,
-   "agent": 3
+   "agent": 3,
+   "model": "Fable 5"
   },
   "2026-07-29": {
    "cio": 13,
    "prs": 5,
-   "agent": 4
+   "agent": 4,
+   "model": "Sonnet 5"
   },
   "2026-07-30": {
    "cio": 2
@@ -3897,38 +3936,46 @@
   "2026-08-04": {
    "cio": 5,
    "prs": 3,
-   "agent": 3
+   "agent": 3,
+   "model": "Fable 5"
   },
   "2026-08-05": {
    "cio": 12,
    "prs": 4,
-   "agent": 4
+   "agent": 4,
+   "model": "Fable 5"
   },
   "2026-08-06": {
    "cio": 14,
    "prs": 3,
-   "agent": 2
+   "agent": 2,
+   "model": "Fable 5"
   },
   "2026-08-07": {
    "cio": 9,
    "prs": 9,
-   "agent": 9
+   "agent": 9,
+   "model": "Opus 5"
   },
   "2026-08-10": {
    "cio": 15,
    "prs": 5,
-   "agent": 4
+   "agent": 4,
+   "model": "Opus 5"
   },
   "2026-08-11": {
    "cio": 11,
    "prs": 5,
-   "agent": 5
+   "agent": 5,
+   "model": "Fable 5"
   },
   "2026-08-12": {
-   "cio": 5
+   "cio": 5,
+   "model": "Fable 5"
   },
   "2026-08-13": {
-   "cio": 2
+   "cio": 2,
+   "model": "Fable 5"
   },
   "2026-08-17": {
    "cio": 3,
@@ -3938,12 +3985,14 @@
   "2026-08-18": {
    "cio": 11,
    "prs": 5,
-   "agent": 5
+   "agent": 5,
+   "model": "Fable 5"
   },
   "2026-08-19": {
    "cio": 4,
    "prs": 2,
-   "agent": 2
+   "agent": 2,
+   "model": "Fable 5"
   },
   "2026-08-20": {
    "cio": 1,
@@ -3953,7 +4002,8 @@
   "2026-08-21": {
    "cio": 7,
    "prs": 5,
-   "agent": 5
+   "agent": 5,
+   "model": "Fable 5"
   },
   "2026-08-24": {
    "cio": 2,
@@ -3963,15 +4013,18 @@
   "2026-08-26": {
    "cio": 9,
    "prs": 2,
-   "agent": 1
+   "agent": 1,
+   "model": "Fable 5"
   },
   "2026-08-27": {
-   "cio": 1
+   "cio": 1,
+   "model": "Fable 5"
   },
   "2026-08-28": {
    "cio": 2,
    "prs": 1,
-   "agent": 1
+   "agent": 1,
+   "model": "Fable 5"
   },
   "2026-08-31": {
    "cio": 1,
@@ -3991,38 +4044,8 @@
   "2026-09-04": {
    "cio": 9,
    "prs": 5,
-   "agent": 5
-  }
- },
- "models": {
-  "2025-12": {
-   "Sonnet 4.5": 1
-  },
-  "2026-03": {
-   "Opus 4.6": 4
-  },
-  "2026-04": {
-   "Opus 4.7": 30,
-   "Opus 4.6": 66
-  },
-  "2026-05": {
-   "Opus 4.7": 26
-  },
-  "2026-06": {
-   "Opus 4.8": 13,
-   "Opus 4.7": 1
-  },
-  "2026-07": {
-   "Sonnet 5": 3
-  },
-  "2026-08": {
-   "Fable 5": 112,
-   "Opus 4.7": 2,
-   "Opus 5": 22,
-   "Opus 4.8": 1
-  },
-  "2026-09": {
-   "Fable 5.1": 15
+   "agent": 5,
+   "model": "Fable 5.1"
   }
  },
  "years": {

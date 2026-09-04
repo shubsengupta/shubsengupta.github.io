@@ -1,18 +1,43 @@
 export type SourceKey = 'cio' | 'vidyard' | 'personal' | 'agent';
-export type Day = Partial<Record<SourceKey | 'prs', number>>;
+export type Day = Partial<Record<SourceKey | 'prs', number>> & { model?: string };
 export type PulseData = {
   generatedAt: string;
   cutover: string;
   sources: Record<SourceKey, { label: string; ink: string }>;
   days: Record<string, Day>;
-  models?: Record<string, Record<string, number>>;
   years?: Record<string, { reviews?: number }>;
 };
 
-const STACK: SourceKey[] = ['cio', 'vidyard', 'personal'];
+// Bottom to top: employer, personal, then the agent-built PRs on top.
+const STACK: SourceKey[] = ['cio', 'vidyard', 'personal', 'agent'];
 const DAY_MS = 86400000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const todayISO = () => iso(Date.now());
+
+export type ModelFamily = 'fable' | 'opus' | 'sonnet' | 'haiku' | 'other';
+
+export function modelFamily(name: string | undefined): ModelFamily {
+  const n = (name ?? '').toLowerCase();
+  if (n.includes('fable') || n.includes('mythos')) return 'fable';
+  if (n.includes('opus')) return 'opus';
+  if (n.includes('sonnet')) return 'sonnet';
+  if (n.includes('haiku')) return 'haiku';
+  return 'other';
+}
+
+// Claude's terracotta, stepped lighter for smaller models so the bars carry
+// the model story without a separate band.
+export const MODEL_INKS: Record<ModelFamily, string> = {
+  fable: '#d97757',
+  opus: '#e5977c',
+  sonnet: '#eeb59f',
+  haiku: '#f5d2c3',
+  other: '#d97757',
+};
+
+export function agentInk(day: Day | undefined): string {
+  return MODEL_INKS[modelFamily(day?.model)];
+}
 
 export function stackTotal(day: Day | undefined, hidden: Set<SourceKey>): number {
   if (!day) return 0;
@@ -41,6 +66,7 @@ export type GridOpts = { cell: number; gap: number; colFrom?: number; colTo?: nu
 
 // Columns are weeks (0..52). colFrom/colTo render a slice, x re-based to 0,
 // so the same data can be drawn as one strip or as stacked half-year strips.
+// Any activity fills at least half the cell; four steps cover the rest.
 export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>, o: GridOpts): string {
   const dates = yearGrid(year);
   const max = scale(data, dates, hidden);
@@ -63,7 +89,7 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
     rects.push(`<rect class="bg${future ? ' future' : ''}" x="${x}" y="${y0}" width="${o.cell}" height="${o.cell}" rx="2"/>`);
     if (total > 0) {
       const q = Math.ceil((4 * Math.min(total, max)) / max);
-      const stackH = Math.max(3, Math.round((q / 4) * o.cell));
+      const stackH = Math.max(3, Math.round((0.5 + 0.5 * (q / 4)) * o.cell));
       let yTop = y0 + o.cell;
       let used = 0;
       const visible = STACK.filter((k) => !hidden.has(k) && (day?.[k] ?? 0) > 0);
@@ -74,31 +100,21 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
         if (hh === 0) return;
         used += hh;
         yTop -= hh;
-        rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" rx="${idx === visible.length - 1 ? 2 : 0}" fill="${data.sources[k].ink}"/>`);
+        const ink = k === 'agent' ? agentInk(day) : data.sources[k].ink;
+        rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" rx="${idx === visible.length - 1 ? 2 : 0}" fill="${ink}"/>`);
       });
     }
     parts.push(`<g class="day" data-date="${date}" style="--c:${col - colFrom}">${rects.join('')}</g>`);
   });
   const width = (colTo - colFrom + 1) * step - o.gap;
   parts.push(`<line class="baseline" x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}"/>`);
-  if (!hidden.has('agent')) {
-    dates.forEach((date, i) => {
-      const col = Math.floor(i / 7);
-      if (col < colFrom || col > colTo) return;
-      const n = data.days[date]?.agent ?? 0;
-      if (!n) return;
-      const x = (col - colFrom) * step;
-      const h = Math.min(4, 1 + n);
-      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="${h}" rx="1" fill="${data.sources.agent.ink}"/>`);
-    });
-  }
   return parts.join('');
 }
 
 // Height in user units needed for a grid drawn with these options.
 export function gridHeight(o: { cell: number; gap: number }): number {
   const step = o.cell + o.gap;
-  return 7 * step - o.gap + 1.5 + o.gap + 4 + 1;
+  return 7 * step - o.gap + 3;
 }
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -130,41 +146,6 @@ export function monthLabels(year: number, colFrom = 0, colTo = 52): Array<{ col:
   return out;
 }
 
-// Month spans in grid columns for the visible year, for the model band.
-export function monthSpans(year: number, colFrom = 0, colTo = 52): Array<{ month: string; colFrom: number; colTo: number }> {
-  const dates = yearGrid(year);
-  const spans = new Map<string, { month: string; colFrom: number; colTo: number }>();
-  dates.forEach((d, i) => {
-    const col = Math.floor(i / 7);
-    if (col < colFrom || col > colTo) return;
-    const m = d.slice(0, 7);
-    const s = spans.get(m);
-    if (!s) spans.set(m, { month: m, colFrom: col - colFrom, colTo: col - colFrom });
-    else s.colTo = col - colFrom;
-  });
-  return [...spans.values()];
-}
-
-export type ModelSegment = { month: string; colFrom: number; colTo: number; top: string | null; total: number; breakdown: Array<[string, number]> };
-
-export function modelSegments(data: PulseData, year: number, colFrom = 0, colTo = 52): ModelSegment[] {
-  return monthSpans(year, colFrom, colTo).map((s) => {
-    const counts = data.models?.[s.month] ?? {};
-    const breakdown = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const total = breakdown.reduce((n, [, c]) => n + c, 0);
-    return { ...s, top: breakdown[0]?.[0] ?? null, total, breakdown };
-  });
-}
-
-export function modelFamily(name: string): 'fable' | 'opus' | 'sonnet' | 'haiku' | 'other' {
-  const n = name.toLowerCase();
-  if (n.includes('fable') || n.includes('mythos')) return 'fable';
-  if (n.includes('opus')) return 'opus';
-  if (n.includes('sonnet')) return 'sonnet';
-  if (n.includes('haiku')) return 'haiku';
-  return 'other';
-}
-
 export function readout(data: PulseData, date: string): string {
   const day = data.days[date];
   const bits: string[] = [];
@@ -172,7 +153,7 @@ export function readout(data: PulseData, date: string): string {
   if (day?.vidyard) bits.push(`${day.vidyard} ${data.sources.vidyard.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
   if (day?.prs) bits.push(`${day.prs} PR${day.prs === 1 ? '' : 's'}`);
-  if (day?.agent) bits.push(`${day.agent} ${data.sources.agent.label.toLowerCase()}`);
+  if (day?.agent) bits.push(`${day.agent} built with ${day.model || 'Claude'}`);
   return [formatDate(date), ...(bits.length ? bits : ['quiet'])].join(' · ');
 }
 
@@ -182,22 +163,23 @@ export function dayRows(data: PulseData, date: string): DayRow[] {
   const day = data.days[date];
   if (!day) return [];
   const rows: DayRow[] = [];
-  for (const k of STACK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
+  for (const k of ['cio', 'vidyard', 'personal'] as SourceKey[]) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
   if (day.prs) rows.push({ key: 'prs', label: day.prs === 1 ? 'PR opened' : 'PRs opened', ink: null, n: day.prs });
-  if (day.agent) rows.push({ key: 'agent', label: data.sources.agent.label.toLowerCase(), ink: data.sources.agent.ink, n: day.agent });
+  if (day.agent) rows.push({ key: 'agent', label: `built with ${day.model || 'Claude'}`, ink: agentInk(day), n: day.agent });
   return rows;
 }
 
 export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
   const today = todayISO();
   const dates = yearGrid(year).filter((d) => d.startsWith(String(year)) && d <= today);
+  const noAgent = new Set<SourceKey>([...hidden, 'agent']);
   let busiest: { date: string; total: number } | null = null;
   let contributions = 0;
   let prs = 0;
   let agent = 0;
   for (const d of dates) {
     const day = data.days[d];
-    const t = stackTotal(day, hidden);
+    const t = stackTotal(day, noAgent);
     contributions += t;
     prs += day?.prs ?? 0;
     agent += day?.agent ?? 0;
@@ -231,9 +213,9 @@ export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey
   const totals: Partial<Record<SourceKey, number>> = {};
   for (const [d, day] of Object.entries(data.days)) {
     if (!d.startsWith(String(year))) continue;
-    for (const k of STACK) if (!hidden.has(k) && day[k]) totals[k] = (totals[k] ?? 0) + day[k]!;
+    for (const k of ['cio', 'vidyard', 'personal'] as SourceKey[]) if (!hidden.has(k) && day[k]) totals[k] = (totals[k] ?? 0) + day[k]!;
   }
-  const labels = STACK.filter((k) => totals[k]).map((k) => data.sources[k].label);
+  const labels = (['cio', 'vidyard', 'personal'] as SourceKey[]).filter((k) => totals[k]).map((k) => data.sources[k].label);
   const bits = [String(year), `${s.contributions.toLocaleString('en-CA')} contributions`, ...labels];
   if (s.prs) bits.push(`${s.prs} PRs`);
   return bits.join(' · ');

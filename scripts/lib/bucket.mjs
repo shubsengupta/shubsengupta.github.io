@@ -31,11 +31,11 @@ export function modelName(raw) {
   return raw.replace(/\(.*?\)/g, '').replace(/^claude\s+/i, '').trim();
 }
 
-// Per-month count of commits per Claude model, from co-author trailers.
+// Per-day count of commits per Claude model, from co-author trailers.
 export function bucketModels(items) {
   const months = {};
   for (const { commit } of items) {
-    const month = commit.author.date.slice(0, 7);
+    const month = commit.author.date.slice(0, 10);
     for (const m of commit.message.matchAll(CLAUDE_COAUTHOR)) {
       const name = modelName(m[1]);
       const bucket = (months[month] ??= {});
@@ -43,4 +43,9 @@ export function bucketModels(items) {
     }
   }
   return months;
+}
+
+export function topModel(counts) {
+  const entries = Object.entries(counts ?? {}).sort((a, b) => b[1] - a[1]);
+  return entries[0]?.[0] ?? null;
 }

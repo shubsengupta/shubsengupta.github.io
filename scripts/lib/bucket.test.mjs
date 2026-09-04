@@ -21,7 +21,7 @@ test('isAiAssisted ignores unrelated co-authors', () => {
   assert.equal(isAiAssisted('co-authored-by: claude opus <noreply@anthropic.com>'), true);
 });
 
-import { bucketPRs, isAgentBuilt, bucketModels, modelName } from './bucket.mjs';
+import { bucketPRs, isAgentBuilt, bucketModels, modelName, topModel } from './bucket.mjs';
 
 test('bucketPRs counts PRs per created day and flags agent-built ones', () => {
   const days = bucketPRs([
@@ -33,7 +33,7 @@ test('bucketPRs counts PRs per created day and flags agent-built ones', () => {
   assert.equal(isAgentBuilt('Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>'), true);
 });
 
-test('bucketModels tallies Claude co-authors per month with context tags stripped', () => {
+test('bucketModels tallies Claude co-authors per day with context tags stripped', () => {
   const item = (date, message) => ({ commit: { message, author: { date } } });
   const months = bucketModels([
     item('2026-06-02T00:00:00Z', 'a\n\nCo-authored-by: Claude Fable 5 <noreply@anthropic.com>'),
@@ -41,6 +41,7 @@ test('bucketModels tallies Claude co-authors per month with context tags strippe
     item('2026-06-10T00:00:00Z', 'c\n\nCo-authored-by: Claude Fable 5 <noreply@anthropic.com>\nCo-authored-by: Jane <j@x>'),
     item('2026-07-01T00:00:00Z', 'd'),
   ]);
-  assert.deepEqual(months, { '2026-06': { 'Fable 5': 2, 'Opus 5': 1 } });
+  assert.deepEqual(months, { '2026-06-02': { 'Fable 5': 1 }, '2026-06-09': { 'Opus 5': 1 }, '2026-06-10': { 'Fable 5': 1 } });
+  assert.equal(topModel({ 'Fable 5': 2, 'Opus 5': 3 }), 'Opus 5');
   assert.equal(modelName('Claude Fable 5.1'), 'Fable 5.1');
 });

@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { parseArgs } from 'node:util';
 import { monthWindows, quarterWindows, yearWindows } from './lib/windows.mjs';
-import { bucketCommits, bucketPRs, bucketModels } from './lib/bucket.mjs';
+import { bucketCommits, bucketPRs, bucketModels, topModel } from './lib/bucket.mjs';
 import { applyEra } from './lib/era.mjs';
 import { mergeDays } from './lib/merge.mjs';
 import { createClient, createFixtureClient, resolveToken, TooManyResults } from './lib/github.mjs';
@@ -36,8 +36,8 @@ async function loadExisting(path) {
 function stripEmpty(days) {
   const out = {};
   for (const [day, v] of Object.entries(days)) {
-    const clean = Object.fromEntries(Object.entries(v).filter(([, n]) => n > 0));
-    if (Object.keys(clean).length) out[day] = clean;
+    const clean = Object.fromEntries(Object.entries(v).filter(([, n]) => (typeof n === 'string' ? n.length > 0 : n > 0)));
+    if (Object.keys(clean).some((k) => k !== 'model')) out[day] = clean;
   }
   return out;
 }
@@ -89,6 +89,7 @@ async function main() {
       personal: personal[day]?.count ?? 0,
       prs: prs[day]?.count ?? 0,
       agent: prs[day]?.agent ?? 0,
+      model: topModel(models[day]) ?? '',
     };
   }
 
@@ -104,14 +105,12 @@ async function main() {
 
   const withEra = applyEra(fresh, inRange, CUTOVER);
   const days = stripEmpty(mergeDays(existing?.days ?? {}, withEra, { from, to }));
-  const keptModels = Object.fromEntries(Object.entries(existing?.models ?? {}).filter(([m]) => m < from.slice(0, 7) || m > to.slice(0, 7)));
 
   const json = {
     generatedAt: new Date().toISOString(),
     cutover: CUTOVER,
     sources: SOURCES,
     days,
-    models: Object.fromEntries(Object.entries({ ...keptModels, ...models }).sort()),
     years,
   };
   await mkdir(dirname(args.out), { recursive: true });
