@@ -6,10 +6,11 @@
   --muted: #5c6b78;
   --faint: #8b98a3;
   --line: #cfd8df;
-  --cio: #6b4df6;
-  --vidyard: #14a37f;
-  --personal: #f0a12e;
-  --ai: #101820;
+  --cio: #00262b;
+  --cio-tint: #bdffbd;
+  --vidyard: #3bcb85;
+  --personal: #3b6fe0;
+  --agent: #d97757;
   --sans: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
   --mono: 'Azeret Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --r-s: 4px;

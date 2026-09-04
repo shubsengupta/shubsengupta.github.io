@@ -1,5 +1,7 @@
 ---
-import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, type PulseData, type SourceKey } from '../lib/pulse';
+import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, modelSegments, modelFamily, type PulseData, type SourceKey } from '../lib/pulse';
+import cioMark from '../assets/brand/customerio.svg?raw';
+import claudeMark from '../assets/brand/claude.svg?raw';
 interface Props { data: PulseData }
 const { data } = Astro.props;
 const CELL = 11;
@@ -11,7 +13,7 @@ const year = years[0];
 const hidden = new Set<SourceKey>();
 const initialDate = latestActive(data);
 const s = stats(data, year, hidden);
-const legend: SourceKey[] = ['cio', 'vidyard', 'personal', 'ai'];
+const legend: SourceKey[] = ['cio', 'vidyard', 'personal', 'agent'];
 const totals = yearTotals(data);
 const maxYear = Math.max(...totals.map((t) => t.total), 1);
 
@@ -25,8 +27,22 @@ const H = gridHeight({ cell: CELL, gap: GAP });
 const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom + 1) * STEP - GAP;
 const weekdays = [{ row: 1, t: 'M' }, { row: 3, t: 'W' }, { row: 5, t: 'F' }];
 const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="${w.row * STEP + CELL - 2}">${w.t}</text>`).join('');
+
+function modelBand(y: number, colFrom: number, colTo: number): string {
+  return modelSegments(data, y, colFrom, colTo)
+    .filter((seg) => seg.top)
+    .map((seg) => {
+      const x = seg.colFrom * STEP;
+      const w = (seg.colTo - seg.colFrom + 1) * STEP - GAP;
+      const minW = colTo - colFrom < 52 ? 72 : 40; // half-year strips render at roughly half the pixels
+      const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
+      const title = seg.breakdown.map(([m, n]) => `${m}: ${n}`).join(', ');
+      return `<g class="seg ${modelFamily(seg.top!)}" data-month="${seg.month}"><title>${seg.month}: ${title}</title><rect x="${x}" y="0" width="${w}" height="14" rx="3"/>${label}</g>`;
+    })
+    .join('');
+}
 ---
-<section class="pulse wrap" aria-label="GitHub activity" data-years={years.join(',')} data-gutter={GUTTER}>
+<section class="pulse wrap" aria-label="GitHub activity" data-years={years.join(',')}>
   <div class="head">
     <div class="yearnav mono">
       <button class="step" data-step="1" aria-label="Earlier year">‹</button>
@@ -36,7 +52,11 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     <div class="legend" role="group" aria-label="Sources">
       {legend.map((k) => (
         <button class="src" data-source={k} aria-pressed="true" style={`--ink:${data.sources[k].ink}`}>
-          <i></i>{data.sources[k].label}
+          {k === 'cio' && <span class="mark cio" set:html={cioMark} />}
+          {k === 'vidyard' && <span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="14" height="14" /></span>}
+          {k === 'personal' && <span class="mark personal"><i></i></span>}
+          {k === 'agent' && <span class="mark agent" set:html={claudeMark} />}
+          {data.sources[k].label}
         </button>
       ))}
     </div>
@@ -57,23 +77,24 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
         tabindex={c.id === 'full' ? 0 : -1}
         set:html={dayLabels + renderGrid(data, year, hidden, { cell: CELL, gap: GAP, colFrom: c.colFrom, colTo: c.colTo })}
       />
+      <svg class="models mono" viewBox={`${-GUTTER} 0 ${widthOf(c) + GUTTER} 14`} width="100%" aria-label="Claude model paired with, by month" set:html={`<text class="dow" x="${-GUTTER + 4}" y="10">AI</text>` + modelBand(year, c.colFrom, c.colTo)} />
     </div>
   ))}
 
   <div class="tip mono" id="pulse-tip" hidden role="status"></div>
 
-  <div class="under">
-    <p class="mono readout" id="pulse-readout" aria-live="polite">{readout(data, initialDate)}</p>
-    <dl class="mono statrow">
-      <div><dt>streak</dt><dd id="st-streak">{s.streak}d</dd></div>
-      <div><dt>busiest</dt><dd id="st-busiest">{s.busiest ? `${s.busiest.total} on ${s.busiest.date.slice(5)}` : '0'}</dd></div>
-      <div><dt>ai-assisted</dt><dd id="st-ai">{s.aiShare}%</dd></div>
-    </dl>
-  </div>
+  <p class="mono readout" id="pulse-readout" aria-live="polite">{readout(data, initialDate)}</p>
+
+  <dl class="stats">
+    <div><dd id="st-prs">{s.prs}</dd><dt>PRs opened</dt></div>
+    <div><dd id="st-agent">{s.agentShare}%</dd><dt>built with Claude</dt></div>
+    <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed</dt></div>
+    <div><dd id="st-contrib">{s.contributions.toLocaleString('en-CA')}</dd><dt>contributions</dt></div>
+  </dl>
 
   <div class="career" role="group" aria-label="Pick a year">
     {totals.map((t) => (
-      <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} commits`}>
+      <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} contributions`}>
         <span class="bar" aria-hidden="true">
           {(['personal', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
             <i data-source={k} style={`height:${Math.round(((t.by[k] ?? 0) / maxYear) * 100)}%`}></i>
@@ -84,11 +105,11 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily commit counts over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Ticks under the baseline mark days with AI-assisted commits. Use arrow keys to move between days. The row of yearly bars below picks a year.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Ticks under the baseline mark days with pull requests built with Claude Code. The band below names the Claude model used most each month. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
 </section>
 
 <script>
-  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, type PulseData, type SourceKey } from '../lib/pulse';
+  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, modelSegments, modelFamily, type PulseData, type SourceKey } from '../lib/pulse';
   import data from '../data/pulse.json';
 
   const d = data as PulseData;
@@ -102,6 +123,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   const STEP = CELL + GAP;
   const strips = [...root.querySelectorAll<HTMLElement>('.strip')];
   const dayLabels = [...root.querySelector('.grid')!.querySelectorAll('.dow')].map((t) => t.outerHTML).join('');
+  const bandLabel = root.querySelector('.models .dow')!.outerHTML;
   let idx = 0;
   const hidden = new Set<SourceKey>();
   let pinned: string | null = null;
@@ -111,11 +133,25 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   const markFocus = (date: string) => root.querySelectorAll(`.day[data-date="${date}"]`).forEach((el) => el.classList.add('focus'));
   const show = (date: string) => { out.textContent = readout(d, date); };
 
+  function modelBand(y: number, colFrom: number, colTo: number): string {
+    return modelSegments(d, y, colFrom, colTo)
+      .filter((seg) => seg.top)
+      .map((seg) => {
+        const x = seg.colFrom * STEP;
+        const w = (seg.colTo - seg.colFrom + 1) * STEP - GAP;
+        const minW = colTo - colFrom < 52 ? 72 : 40; // half-year strips render at roughly half the pixels
+      const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
+        const title = seg.breakdown.map(([m, n]) => `${m}: ${n}`).join(', ');
+        return `<g class="seg ${modelFamily(seg.top!)}" data-month="${seg.month}"><title>${seg.month}: ${title}</title><rect x="${x}" y="0" width="${w}" height="14" rx="3"/>${label}</g>`;
+      })
+      .join('');
+  }
+
   function placeTip(date: string, anchor: Element) {
     const rows = dayRows(d, date);
     tip.innerHTML = `<b>${formatDate(date)}</b>` + (rows.length
-      ? rows.map((r) => `<span><i style="background:${r.ink}"></i>${r.n} ${r.label}</span>`).join('')
-      : '<span class="quiet">no commits</span>');
+      ? rows.map((r) => `<span><i style="${r.ink ? `background:${r.ink}` : 'visibility:hidden'}"></i>${r.n} ${r.label}</span>`).join('')
+      : '<span class="quiet">no activity</span>');
     tip.hidden = false;
     const a = anchor.getBoundingClientRect();
     const r = root.getBoundingClientRect();
@@ -135,6 +171,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
       grid.classList.remove('enter');
       grid.innerHTML = dayLabels + renderGrid(d, year, hidden, { cell: CELL, gap: GAP, colFrom, colTo });
       st.querySelector('.months')!.innerHTML = monthLabels(year, colFrom, colTo).map((m) => `<text x="${m.col * STEP}" y="10">${m.label}</text>`).join('');
+      st.querySelector('.models')!.innerHTML = bandLabel + modelBand(year, colFrom, colTo);
     }
     yearEl.textContent = String(year);
     root.querySelectorAll<HTMLButtonElement>('.step').forEach((b) => {
@@ -143,9 +180,10 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     });
     root.querySelectorAll<HTMLButtonElement>('.yr').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.year) === year)));
     const s = stats(d, year, hidden);
-    document.getElementById('st-streak')!.textContent = `${s.streak}d`;
-    document.getElementById('st-busiest')!.textContent = s.busiest ? `${s.busiest.total} on ${s.busiest.date.slice(5)}` : '0';
-    document.getElementById('st-ai')!.textContent = `${s.aiShare}%`;
+    document.getElementById('st-prs')!.textContent = String(s.prs);
+    document.getElementById('st-agent')!.textContent = `${s.agentShare}%`;
+    document.getElementById('st-reviews')!.textContent = String(s.reviews);
+    document.getElementById('st-contrib')!.textContent = s.contributions.toLocaleString('en-CA');
     if (focused) markFocus(focused);
   }
 
@@ -234,25 +272,41 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .step { all: unset; cursor: pointer; display: inline-grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 999px; color: var(--ink); font: inherit; font-size: 1.05rem; }
   .step:hover { background: var(--surface-2); }
   .step:disabled { color: var(--faint); cursor: default; background: none; }
+
   .legend { display: inline-flex; gap: 0.4rem; flex-wrap: wrap; }
-  .src { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: var(--ink); padding: 0.3rem 0.75rem 0.3rem 0.55rem; border-radius: 999px; background: var(--surface); transition: background 150ms ease, color 150ms ease; }
+  .src { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: var(--ink); padding: 0.25rem 0.75rem 0.25rem 0.35rem; border-radius: 999px; background: var(--surface); transition: background 150ms ease, color 150ms ease, opacity 150ms ease; }
   .src:hover { background: var(--surface-2); }
-  .src i { width: 0.62rem; height: 0.62rem; border-radius: 3px; background: var(--ink); display: inline-block; }
-  .src[data-source="ai"] i { height: 3px; border-radius: 2px; }
+  .mark { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 6px; }
+  .mark :global(svg), .mark img { width: 0.8rem; height: 0.8rem; display: block; }
+  .mark.cio { background: var(--cio-tint); color: var(--cio); }
+  .mark.vidyard { background: #fff; border-radius: 999px; }
+  .mark.vidyard img { width: 1.05rem; height: 1.05rem; border-radius: 999px; }
+  .mark.personal i { width: 0.7rem; height: 0.7rem; border-radius: 3px; background: var(--personal); display: block; }
+  .mark.agent { color: var(--agent); }
+  .mark.agent :global(svg) { width: 0.95rem; height: 0.95rem; }
   .src[aria-pressed="false"] { color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
-  .src[aria-pressed="false"] i { background: var(--line); }
+  .src[aria-pressed="false"] .mark { filter: grayscale(1); opacity: 0.45; }
 
   .strip-a, .strip-b { display: none; }
   .months { display: block; margin-bottom: 2px; overflow: visible; }
   .months :global(text) { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
   .grid { display: block; outline: none; overflow: visible; border-radius: var(--r-s); }
-  .grid :global(.dow) { font-size: 8.5px; fill: var(--faint); font-family: var(--mono); }
+  .grid :global(.dow), .models :global(.dow) { font-size: 8.5px; fill: var(--faint); font-family: var(--mono); }
   .grid :global(.bg) { fill: var(--surface); }
   .grid :global(.bg.future) { fill: transparent; }
   .grid :global(.baseline) { stroke: var(--ink); stroke-width: 1; opacity: 0.4; }
   .grid :global(.day rect) { transition: y 220ms cubic-bezier(.2,.7,.2,1), height 220ms cubic-bezier(.2,.7,.2,1); }
   .grid :global(.day:hover .bg), .grid :global(.day.focus .bg) { fill: var(--surface-2); stroke: var(--ink); stroke-width: 1; }
   .grid :global(.day) { cursor: crosshair; }
+
+  .models { display: block; margin-top: 4px; overflow: visible; }
+  .models :global(.seg rect) { fill: var(--surface); }
+  .models :global(.seg text) { font-size: 8.5px; font-family: var(--mono); fill: var(--ink); }
+  .models :global(.seg.fable rect) { fill: var(--agent); }
+  .models :global(.seg.fable text) { fill: #fff; }
+  .models :global(.seg.opus rect) { fill: #efc2ad; }
+  .models :global(.seg.sonnet rect) { fill: #f6dccf; }
+  .models :global(.seg.haiku rect) { fill: #f9e9e0; }
 
   /* One orchestrated entrance: bars rise from the baseline, staggered by week. */
   .grid.enter :global(rect[data-source]) { transform-box: fill-box; transform-origin: bottom; animation: rise 520ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--c, 0) * 9ms); }
@@ -267,15 +321,16 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .tip :global(i) { width: 0.5rem; height: 0.5rem; border-radius: 2px; display: inline-block; }
   .tip :global(.quiet) { color: var(--faint); }
 
-  .under { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem 2rem; flex-wrap: wrap; margin-top: 1rem; }
-  .readout { margin: 0; min-height: 1.3em; color: var(--muted); transition: color 150ms ease; }
+  .readout { margin: 1rem 0 0; min-height: 1.3em; color: var(--muted); transition: color 150ms ease; }
   .readout.live { color: var(--ink); font-weight: 500; }
-  .statrow { display: flex; gap: 0.4rem 1.75rem; margin: 0; color: var(--muted); flex-wrap: wrap; }
-  .statrow div { display: flex; gap: 0.5rem; }
-  .statrow dt::after { content: ':'; }
-  .statrow dd { margin: 0; color: var(--ink); }
 
-  .career { display: flex; gap: 0.35rem; align-items: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); overflow-x: auto; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin: 1.25rem 0 0; }
+  .stats div { background: var(--surface); border-radius: var(--r-l); padding: 0.9rem 1rem 0.8rem; }
+  .stats dd { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stats dt { margin-top: 0.35rem; color: var(--muted); font-size: 0.82rem; }
+  .stats div:nth-child(2) dd { color: var(--agent); }
+
+  .career { display: flex; gap: 0.35rem; align-items: flex-end; margin-top: 1.5rem; overflow-x: auto; }
   .yr { all: unset; cursor: pointer; flex: 1 1 0; min-width: 1.6rem; display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; padding: 0.25rem 0.15rem; border-radius: var(--r-m); transition: background 150ms ease; }
   .yr:hover { background: var(--surface); }
   .yr[aria-pressed="true"] { background: var(--surface); }
@@ -293,10 +348,13 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     .strip-a, .strip-b { display: block; }
     .strip-b { margin-top: 0.9rem; }
     .months :global(text) { font-size: 11px; }
-    .grid :global(.dow) { font-size: 10px; }
+    .grid :global(.dow), .models :global(.dow) { font-size: 10px; }
+    .models :global(.seg text) { font-size: 10px; }
     .legend { gap: 0.3rem; }
-    .src { font-size: 0.76rem; padding: 0.25rem 0.6rem 0.25rem 0.5rem; }
-    .yr { min-width: 1.4rem; }
+    .src { font-size: 0.76rem; padding: 0.2rem 0.6rem 0.2rem 0.3rem; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .yr { min-width: 1rem; }
+    .career { gap: 0.25rem; }
     .tip { display: none; }
   }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

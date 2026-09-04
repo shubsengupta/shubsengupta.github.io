@@ -11,10 +11,12 @@ test('fixture run produces spec-shaped json', () => {
     '--from', '2019-01-01', '--to', '2026-08-31']);
   const json = JSON.parse(readFileSync(out, 'utf8'));
   assert.equal(json.cutover, '2025-12-03');
-  assert.deepEqual(Object.keys(json.sources), ['cio', 'vidyard', 'personal', 'ai']);
-  assert.deepEqual(json.days['2026-08-06'], { cio: 2, ai: 1 });
+  assert.deepEqual(Object.keys(json.sources), ['cio', 'vidyard', 'personal', 'agent']);
+  assert.deepEqual(json.days['2026-08-06'], { cio: 2, prs: 2, agent: 1 });
   assert.deepEqual(json.days['2026-08-10'], { cio: 1, personal: 1 });
-  assert.deepEqual(json.days['2026-08-12'], { cio: 4 }, 'calendar-only day is attributed to the current employer');
+  assert.deepEqual(json.days['2026-08-12'], { cio: 4, prs: 1, agent: 1 }, 'calendar-only day is attributed to the current employer');
   assert.deepEqual(json.days['2019-03-12'], { vidyard: 7 });
+  assert.deepEqual(json.models['2026-08'], { 'Fable 5': 1 });
+  assert.deepEqual(json.years['2026'], { reviews: 137 });
   assert.match(json.generatedAt, /^\d{4}-\d{2}-\d{2}T/);
 });

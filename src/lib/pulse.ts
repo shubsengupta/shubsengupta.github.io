@@ -1,10 +1,12 @@
-export type SourceKey = 'cio' | 'vidyard' | 'personal' | 'ai';
-export type Day = Partial<Record<SourceKey, number>>;
+export type SourceKey = 'cio' | 'vidyard' | 'personal' | 'agent';
+export type Day = Partial<Record<SourceKey | 'prs', number>>;
 export type PulseData = {
   generatedAt: string;
   cutover: string;
   sources: Record<SourceKey, { label: string; ink: string }>;
   days: Record<string, Day>;
+  models?: Record<string, Record<string, number>>;
+  years?: Record<string, { reviews?: number }>;
 };
 
 const STACK: SourceKey[] = ['cio', 'vidyard', 'personal'];
@@ -58,7 +60,7 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
     const total = stackTotal(day, hidden);
     const future = date > today;
     const rects: string[] = [];
-    rects.push(`<rect class="bg${future ? ' future' : ''}" x="${x}" y="${y0}" width="${o.cell}" height="${o.cell}"/>`);
+    rects.push(`<rect class="bg${future ? ' future' : ''}" x="${x}" y="${y0}" width="${o.cell}" height="${o.cell}" rx="2"/>`);
     if (total > 0) {
       const q = Math.ceil((4 * Math.min(total, max)) / max);
       const stackH = Math.max(3, Math.round((q / 4) * o.cell));
@@ -79,14 +81,15 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
   });
   const width = (colTo - colFrom + 1) * step - o.gap;
   parts.push(`<line class="baseline" x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}"/>`);
-  if (!hidden.has('ai')) {
+  if (!hidden.has('agent')) {
     dates.forEach((date, i) => {
       const col = Math.floor(i / 7);
       if (col < colFrom || col > colTo) return;
-      const day = data.days[date];
-      if (!(day?.ai ?? 0)) return;
+      const n = data.days[date]?.agent ?? 0;
+      if (!n) return;
       const x = (col - colFrom) * step;
-      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="2" rx="1" fill="${data.sources.ai.ink}"/>`);
+      const h = Math.min(4, 1 + n);
+      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="${h}" rx="1" fill="${data.sources.agent.ink}"/>`);
     });
   }
   return parts.join('');
@@ -95,7 +98,7 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
 // Height in user units needed for a grid drawn with these options.
 export function gridHeight(o: { cell: number; gap: number }): number {
   const step = o.cell + o.gap;
-  return 7 * step - o.gap + 1.5 + o.gap + 2 + 1;
+  return 7 * step - o.gap + 1.5 + o.gap + 4 + 1;
 }
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -127,26 +130,77 @@ export function monthLabels(year: number, colFrom = 0, colTo = 52): Array<{ col:
   return out;
 }
 
+// Month spans in grid columns for the visible year, for the model band.
+export function monthSpans(year: number, colFrom = 0, colTo = 52): Array<{ month: string; colFrom: number; colTo: number }> {
+  const dates = yearGrid(year);
+  const spans = new Map<string, { month: string; colFrom: number; colTo: number }>();
+  dates.forEach((d, i) => {
+    const col = Math.floor(i / 7);
+    if (col < colFrom || col > colTo) return;
+    const m = d.slice(0, 7);
+    const s = spans.get(m);
+    if (!s) spans.set(m, { month: m, colFrom: col - colFrom, colTo: col - colFrom });
+    else s.colTo = col - colFrom;
+  });
+  return [...spans.values()];
+}
+
+export type ModelSegment = { month: string; colFrom: number; colTo: number; top: string | null; total: number; breakdown: Array<[string, number]> };
+
+export function modelSegments(data: PulseData, year: number, colFrom = 0, colTo = 52): ModelSegment[] {
+  return monthSpans(year, colFrom, colTo).map((s) => {
+    const counts = data.models?.[s.month] ?? {};
+    const breakdown = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const total = breakdown.reduce((n, [, c]) => n + c, 0);
+    return { ...s, top: breakdown[0]?.[0] ?? null, total, breakdown };
+  });
+}
+
+export function modelFamily(name: string): 'fable' | 'opus' | 'sonnet' | 'haiku' | 'other' {
+  const n = name.toLowerCase();
+  if (n.includes('fable') || n.includes('mythos')) return 'fable';
+  if (n.includes('opus')) return 'opus';
+  if (n.includes('sonnet')) return 'sonnet';
+  if (n.includes('haiku')) return 'haiku';
+  return 'other';
+}
+
 export function readout(data: PulseData, date: string): string {
   const day = data.days[date];
   const bits: string[] = [];
   if (day?.cio) bits.push(`${day.cio} ${data.sources.cio.label}`);
   if (day?.vidyard) bits.push(`${day.vidyard} ${data.sources.vidyard.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
-  if (day?.ai) bits.push(`${day.ai} ${data.sources.ai.label}`);
+  if (day?.prs) bits.push(`${day.prs} PR${day.prs === 1 ? '' : 's'}`);
+  if (day?.agent) bits.push(`${day.agent} ${data.sources.agent.label.toLowerCase()}`);
   return [formatDate(date), ...(bits.length ? bits : ['quiet'])].join(' · ');
+}
+
+export type DayRow = { key: SourceKey | 'prs'; label: string; ink: string | null; n: number };
+
+export function dayRows(data: PulseData, date: string): DayRow[] {
+  const day = data.days[date];
+  if (!day) return [];
+  const rows: DayRow[] = [];
+  for (const k of STACK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
+  if (day.prs) rows.push({ key: 'prs', label: day.prs === 1 ? 'PR opened' : 'PRs opened', ink: null, n: day.prs });
+  if (day.agent) rows.push({ key: 'agent', label: data.sources.agent.label.toLowerCase(), ink: data.sources.agent.ink, n: day.agent });
+  return rows;
 }
 
 export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
   const today = todayISO();
   const dates = yearGrid(year).filter((d) => d.startsWith(String(year)) && d <= today);
   let busiest: { date: string; total: number } | null = null;
-  let commits = 0;
-  let ai = 0;
+  let contributions = 0;
+  let prs = 0;
+  let agent = 0;
   for (const d of dates) {
-    const t = stackTotal(data.days[d], hidden);
-    commits += t;
-    ai += data.days[d]?.ai ?? 0;
+    const day = data.days[d];
+    const t = stackTotal(day, hidden);
+    contributions += t;
+    prs += day?.prs ?? 0;
+    agent += day?.agent ?? 0;
     if (t > (busiest?.total ?? 0)) busiest = { date: d, total: t };
   }
   let streak = 0;
@@ -156,7 +210,8 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
     else if (d === today) continue;
     else break;
   }
-  return { streak, busiest, aiShare: commits ? Math.round((ai / commits) * 100) : 0 };
+  const reviews = data.years?.[String(year)]?.reviews ?? 0;
+  return { streak, busiest, contributions, prs, agent, agentShare: prs ? Math.round((agent / prs) * 100) : 0, reviews };
 }
 
 export function availableYears(data: PulseData): number[] {
@@ -172,18 +227,16 @@ export function latestActive(data: PulseData): string {
 }
 
 export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey>): string {
+  const s = stats(data, year, hidden);
   const totals: Partial<Record<SourceKey, number>> = {};
-  let commits = 0;
   for (const [d, day] of Object.entries(data.days)) {
     if (!d.startsWith(String(year))) continue;
-    for (const k of STACK) {
-      if (hidden.has(k) || !day[k]) continue;
-      totals[k] = (totals[k] ?? 0) + day[k]!;
-      commits += day[k]!;
-    }
+    for (const k of STACK) if (!hidden.has(k) && day[k]) totals[k] = (totals[k] ?? 0) + day[k]!;
   }
   const labels = STACK.filter((k) => totals[k]).map((k) => data.sources[k].label);
-  return [String(year), `${commits.toLocaleString('en-CA')} commits`, ...labels].join(' · ');
+  const bits = [String(year), `${s.contributions.toLocaleString('en-CA')} contributions`, ...labels];
+  if (s.prs) bits.push(`${s.prs} PRs`);
+  return bits.join(' · ');
 }
 
 export type YearTotal = { year: number; total: number; by: Partial<Record<SourceKey, number>> };
@@ -202,12 +255,4 @@ export function yearTotals(data: PulseData): YearTotal[] {
     }
   }
   return [...map.values()].sort((a, b) => a.year - b.year);
-}
-
-export function dayRows(data: PulseData, date: string): Array<{ key: SourceKey; label: string; ink: string; n: number }> {
-  const day = data.days[date];
-  if (!day) return [];
-  return (['cio', 'vidyard', 'personal', 'ai'] as SourceKey[])
-    .filter((k) => day[k])
-    .map((k) => ({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! }));
 }
