@@ -17,7 +17,7 @@
 - Pulse JSON contains counts only. No repo names, messages, SHAs.
 - Commit search must always be scoped with `org:` or `user:`. Month windows. Sleep to stay under 30 search requests/minute.
 - Cutover date `2025-12-03`. Days before it get `vidyard = calendarTotal - personal` (min 0); days on or after never get `vidyard`.
-- Source inks: cio `#1f6f5f`, vidyard `#7a5c1e`, personal `#b8432f`, ai `#2b2b2b`. Paper `#f4efe6`, ink `#1a1917`, rule `#d8d0c2`.
+- Source inks: cio `#1f6f5f`, vidyard `#5c4310`, personal `#b8432f`, ai `#2b2b2b`. Paper `#f4efe6`, ink `#1a1917`, rule `#d8d0c2`.
 - Fonts: Newsreader (serif), JetBrains Mono (mono), both from Google Fonts with fallbacks.
 - No em dashes in any copy. Hyphens or commas instead.
 - Commit trailer on every commit: `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
@@ -114,7 +114,7 @@ playwright-report/
   --rule: #d8d0c2;
   --muted: #6f685c;
   --cio: #1f6f5f;
-  --vidyard: #7a5c1e;
+  --vidyard: #5c4310;
   --personal: #b8432f;
   --ai: #2b2b2b;
   --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -500,7 +500,7 @@ const ACCOUNT_START = '2012-04-16';
 const INCREMENTAL_DAYS = 60;
 const SOURCES = {
   cio: { label: 'Customer.io', ink: '#1f6f5f' },
-  vidyard: { label: 'Vidyard', ink: '#7a5c1e' },
+  vidyard: { label: 'Vidyard', ink: '#5c4310' },
   personal: { label: 'Personal', ink: '#b8432f' },
   ai: { label: 'AI-assisted', ink: '#2b2b2b' },
 };
@@ -614,7 +614,7 @@ import { yearGrid, scale, renderGrid, readout, stats, availableYears, type Pulse
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z', cutover: '2025-12-03',
-  sources: { cio: { label: 'Customer.io', ink: '#1f6f5f' }, vidyard: { label: 'Vidyard', ink: '#7a5c1e' }, personal: { label: 'Personal', ink: '#b8432f' }, ai: { label: 'AI-assisted', ink: '#2b2b2b' } },
+  sources: { cio: { label: 'Customer.io', ink: '#1f6f5f' }, vidyard: { label: 'Vidyard', ink: '#5c4310' }, personal: { label: 'Personal', ink: '#b8432f' }, ai: { label: 'AI-assisted', ink: '#2b2b2b' } },
   days: { '2026-09-01': { cio: 14, personal: 2, ai: 9 }, '2026-09-02': { cio: 1 }, '2019-03-12': { vidyard: 6 } },
 };
 

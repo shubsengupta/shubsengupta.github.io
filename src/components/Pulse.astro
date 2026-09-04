@@ -1,19 +1,25 @@
 ---
-import { renderGrid, readout, stats, availableYears, latestActive, monthLabels, type PulseData, type SourceKey } from '../lib/pulse';
+import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, type PulseData, type SourceKey } from '../lib/pulse';
 interface Props { data: PulseData }
 const { data } = Astro.props;
 const CELL = 11;
 const GAP = 3;
+const STEP = CELL + GAP;
 const years = availableYears(data);
 const year = years[0];
 const hidden = new Set<SourceKey>();
 const initialDate = latestActive(data);
 const s = stats(data, year, hidden);
-const STEP = CELL + GAP;
-const W = 53 * STEP - GAP;
-const H = 7 * STEP - GAP + GAP;
 const legend: SourceKey[] = ['cio', 'vidyard', 'personal', 'ai'];
-const months = monthLabels(year);
+
+// One full strip for wide screens, two half-year strips stacked for phones.
+const strips = [
+  { id: 'full', colFrom: 0, colTo: 52 },
+  { id: 'a', colFrom: 0, colTo: 26 },
+  { id: 'b', colFrom: 27, colTo: 52 },
+];
+const H = gridHeight({ cell: CELL, gap: GAP });
+const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom + 1) * STEP - GAP;
 ---
 <section class="pulse wrap" aria-label="GitHub activity" data-years={years.join(',')}>
   <div class="head mono">
@@ -30,19 +36,32 @@ const months = monthLabels(year);
       ))}
     </span>
   </div>
-  <div class="gridwrap">
-    <svg id="pulse-months" class="months mono" viewBox={`0 0 ${W} 12`} width="100%" aria-hidden="true">
-      {months.map((m) => <text x={m.col * STEP} y="10">{m.label}</text>)}
-    </svg>
-    <svg id="pulse-svg" viewBox={`0 -${GAP} ${W} ${H}`} width="100%" role="img" aria-labelledby="pulse-desc" tabindex="0" set:html={renderGrid(data, year, hidden, { cell: CELL, gap: GAP })} />
-  </div>
+
+  {strips.map((c) => (
+    <div class={`strip strip-${c.id}`} data-col-from={c.colFrom} data-col-to={c.colTo}>
+      <svg class="months mono" viewBox={`0 0 ${widthOf(c)} 12`} width="100%" aria-hidden="true">
+        {monthLabels(year, c.colFrom, c.colTo).map((m) => <text x={m.col * STEP} y="10">{m.label}</text>)}
+      </svg>
+      <svg
+        id={c.id === 'full' ? 'pulse-svg' : `pulse-svg-${c.id}`}
+        class="grid"
+        viewBox={`0 0 ${widthOf(c)} ${H}`}
+        width="100%"
+        role="img"
+        aria-labelledby="pulse-desc"
+        tabindex={c.id === 'full' ? 0 : -1}
+        set:html={renderGrid(data, year, hidden, { cell: CELL, gap: GAP, colFrom: c.colFrom, colTo: c.colTo })}
+      />
+    </div>
+  ))}
+
   <p class="mono readout" id="pulse-readout" aria-live="polite">{readout(data, initialDate)}</p>
   <dl class="mono statrow">
     <div><dt>streak</dt><dd id="st-streak">{s.streak}d</dd></div>
     <div><dt>busiest</dt><dd id="st-busiest">{s.busiest ? `${s.busiest.total} on ${s.busiest.date.slice(5)}` : '0'}</dd></div>
     <div><dt>ai-assisted</dt><dd id="st-ai">{s.aiShare}%</dd></div>
   </dl>
-  <p id="pulse-desc" class="sr">Daily commit counts over the last year, stacked by source: Customer.io, Vidyard and personal, with a tick marking days that had AI-assisted commits. Use arrow keys to move between days.</p>
+  <p id="pulse-desc" class="sr">Daily commit counts over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Ticks under the baseline mark days with AI-assisted commits. Use arrow keys to move between days.</p>
 </section>
 
 <script>
@@ -51,23 +70,30 @@ const months = monthLabels(year);
 
   const d = data as PulseData;
   const root = document.querySelector<HTMLElement>('.pulse')!;
-  const svg = document.getElementById('pulse-svg')!;
-  const monthsSvg = document.getElementById('pulse-months')!;
   const out = document.getElementById('pulse-readout')!;
   const yearEl = document.getElementById('pulse-year')!;
   const years = root.dataset.years!.split(',').map(Number);
   const CELL = 11;
   const GAP = 3;
   const STEP = CELL + GAP;
+  const strips = [...root.querySelectorAll<HTMLElement>('.strip')];
   let idx = 0;
   const hidden = new Set<SourceKey>();
   let pinned: string | null = null;
   let focused: string | null = null;
 
+  const clearFocus = () => root.querySelectorAll('.focus').forEach((el) => el.classList.remove('focus'));
+  const markFocus = (date: string) => root.querySelectorAll(`.day[data-date="${date}"]`).forEach((el) => el.classList.add('focus'));
+  const show = (date: string) => { out.textContent = readout(d, date); };
+
   function paint() {
     const year = years[idx];
-    svg.innerHTML = renderGrid(d, year, hidden, { cell: CELL, gap: GAP });
-    monthsSvg.innerHTML = monthLabels(year).map((m) => `<text x="${m.col * STEP}" y="10">${m.label}</text>`).join('');
+    for (const st of strips) {
+      const colFrom = Number(st.dataset.colFrom);
+      const colTo = Number(st.dataset.colTo);
+      st.querySelector('.grid')!.innerHTML = renderGrid(d, year, hidden, { cell: CELL, gap: GAP, colFrom, colTo });
+      st.querySelector('.months')!.innerHTML = monthLabels(year, colFrom, colTo).map((m) => `<text x="${m.col * STEP}" y="10">${m.label}</text>`).join('');
+    }
     yearEl.textContent = String(year);
     root.querySelectorAll<HTMLButtonElement>('.step').forEach((b) => {
       const n = idx + Number(b.dataset.step);
@@ -77,48 +103,48 @@ const months = monthLabels(year);
     document.getElementById('st-streak')!.textContent = `${s.streak}d`;
     document.getElementById('st-busiest')!.textContent = s.busiest ? `${s.busiest.total} on ${s.busiest.date.slice(5)}` : '0';
     document.getElementById('st-ai')!.textContent = `${s.aiShare}%`;
-    if (focused) svg.querySelector(`[data-date="${focused}"]`)?.classList.add('focus');
+    if (focused) markFocus(focused);
   }
 
-  const show = (date: string) => { out.textContent = readout(d, date); };
-  const clearFocus = () => svg.querySelectorAll('.focus').forEach((el) => el.classList.remove('focus'));
-
-  svg.addEventListener('pointerover', (e) => {
-    const g = (e.target as Element).closest<SVGGElement>('.day');
-    if (g && !pinned) show(g.dataset.date!);
-  });
-  svg.addEventListener('pointerleave', () => { if (pinned) show(pinned); });
-  svg.addEventListener('click', (e) => {
-    const g = (e.target as Element).closest<SVGGElement>('.day');
-    if (!g) return;
-    pinned = pinned === g.dataset.date ? null : g.dataset.date!;
-    focused = pinned;
-    clearFocus();
-    if (pinned) g.classList.add('focus');
-    show(g.dataset.date!);
-  });
-
-  svg.addEventListener('keydown', (e) => {
-    const days = [...svg.querySelectorAll<SVGGElement>('.day')];
-    let i = days.findIndex((g) => g.dataset.date === focused);
-    if (i < 0) i = days.length - 1;
-    const delta: Record<string, number> = { ArrowLeft: -7, ArrowRight: 7, ArrowUp: -1, ArrowDown: 1 };
-    if (e.key in delta) {
-      e.preventDefault();
-      i = Math.max(0, Math.min(days.length - 1, i + delta[e.key]));
-      focused = days[i].dataset.date!;
+  for (const st of strips) {
+    const svg = st.querySelector<SVGSVGElement>('.grid')!;
+    svg.addEventListener('pointerover', (e) => {
+      const g = (e.target as Element).closest<SVGElement>('[data-date]');
+      if (g && !pinned) show(g.dataset.date!);
+    });
+    svg.addEventListener('pointerleave', () => { if (pinned) show(pinned); });
+    svg.addEventListener('click', (e) => {
+      const g = (e.target as Element).closest<SVGElement>('[data-date]');
+      if (!g) return;
+      const date = g.dataset.date!;
+      pinned = pinned === date ? null : date;
+      focused = pinned;
       clearFocus();
-      days[i].classList.add('focus');
-      show(focused);
-    } else if (e.key === 'Enter' && focused) {
-      pinned = focused;
-      show(focused);
-    } else if (e.key === 'Escape') {
-      pinned = null;
-      focused = null;
-      clearFocus();
-    }
-  });
+      if (pinned) markFocus(pinned);
+      show(date);
+    });
+    svg.addEventListener('keydown', (e) => {
+      const days = [...svg.querySelectorAll<SVGGElement>('.day')];
+      let i = days.findIndex((g) => g.dataset.date === focused);
+      if (i < 0) i = days.length - 1;
+      const delta: Record<string, number> = { ArrowLeft: -7, ArrowRight: 7, ArrowUp: -1, ArrowDown: 1 };
+      if (e.key in delta) {
+        e.preventDefault();
+        i = Math.max(0, Math.min(days.length - 1, i + delta[e.key]));
+        focused = days[i].dataset.date!;
+        clearFocus();
+        markFocus(focused);
+        show(focused);
+      } else if (e.key === 'Enter' && focused) {
+        pinned = focused;
+        show(focused);
+      } else if (e.key === 'Escape') {
+        pinned = null;
+        focused = null;
+        clearFocus();
+      }
+    });
+  }
 
   root.querySelectorAll<HTMLButtonElement>('.src').forEach((b) => {
     b.addEventListener('click', () => {
@@ -150,27 +176,35 @@ const months = monthLabels(year);
   .legend { display: inline-flex; gap: 1rem; flex-wrap: wrap; }
   .src { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font: inherit; color: var(--ink); }
   .src i { width: 0.6rem; height: 0.6rem; background: var(--ink); display: inline-block; }
-  .src[data-source="ai"] i { height: 2px; }
+  .src[data-source="ai"] i { height: 2px; margin-top: 3px; background: var(--ink); border-top: 1.5px solid #b9b1a2; padding-top: 2px; box-sizing: content-box; background-clip: content-box; }
   .src[aria-pressed="false"] { color: var(--muted); }
   .src[aria-pressed="false"] i { background: transparent; box-shadow: inset 0 0 0 1px var(--rule); }
-  .gridwrap { overflow-x: auto; }
+
+  .strip-a, .strip-b { display: none; }
   .months { display: block; margin-bottom: 2px; }
   .months :global(text) { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
-  #pulse-svg { display: block; outline: none; }
+  .grid { display: block; outline: none; }
+  .grid:focus-visible { outline: 1px solid var(--ink); outline-offset: 6px; }
+  .grid :global(.bg) { fill: #e6dfd2; }
+  .grid :global(.bg.future) { fill: transparent; }
+  .grid :global(.baseline) { stroke: var(--ink); stroke-width: 1; opacity: 0.55; }
+  .grid :global(.day rect) { transition: y 180ms ease, height 180ms ease; }
+  .grid :global(.day:hover .bg), .grid :global(.day.focus .bg) { fill: #d8d0c2; stroke: var(--ink); stroke-width: 1.5; }
+
   @media (max-width: 40rem) {
-    .months :global(text) { font-size: 15px; }
-    .months :global(text:nth-child(even)) { display: none; }
+    .strip-full { display: none; }
+    .strip-a, .strip-b { display: block; }
+    .strip-b { margin-top: 0.9rem; }
+    .months :global(text) { font-size: 11px; }
+    .legend { gap: 0.6rem 0.9rem; }
+    .head { gap: 0.5rem 1rem; }
   }
-  #pulse-svg:focus-visible { outline: 1px solid var(--ink); outline-offset: 6px; }
-  #pulse-svg :global(.bg) { fill: #e9e2d6; }
-  #pulse-svg :global(.bg.future) { fill: transparent; }
-  #pulse-svg :global(.day rect) { transition: y 180ms ease, height 180ms ease; }
-  #pulse-svg :global(.day:hover .bg), #pulse-svg :global(.day.focus .bg) { fill: #d8d0c2; stroke: var(--ink); stroke-width: 1.5; }
+
   .readout { margin: 1rem 0 0; min-height: 1.3em; font-size: 0.72rem; color: var(--ink); }
   .statrow { display: flex; gap: 0.4rem 2rem; margin: 0.4rem 0 0; color: var(--muted); flex-wrap: wrap; font-size: 0.72rem; }
   .statrow div { display: flex; gap: 0.6rem; }
   .statrow dt::after { content: ':'; }
   .statrow dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  @media (prefers-reduced-motion: reduce) { #pulse-svg :global(.day rect) { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .grid :global(.day rect) { transition: none; } }
 </style>

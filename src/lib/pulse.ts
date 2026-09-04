@@ -35,16 +35,24 @@ export function scale(data: PulseData, dates: string[], hidden: Set<SourceKey>):
   return Math.max(1, totals[Math.min(totals.length - 1, Math.floor(totals.length * 0.95))]);
 }
 
-export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>, o: { cell: number; gap: number }): string {
+export type GridOpts = { cell: number; gap: number; colFrom?: number; colTo?: number };
+
+// Columns are weeks (0..52). colFrom/colTo render a slice, x re-based to 0,
+// so the same data can be drawn as one strip or as stacked half-year strips.
+export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>, o: GridOpts): string {
   const dates = yearGrid(year);
   const max = scale(data, dates, hidden);
   const step = o.cell + o.gap;
   const today = todayISO();
+  const colFrom = o.colFrom ?? 0;
+  const colTo = o.colTo ?? 52;
+  const baselineY = 7 * step - o.gap + 1.5;
   const parts: string[] = [];
   dates.forEach((date, i) => {
     const col = Math.floor(i / 7);
+    if (col < colFrom || col > colTo) return;
     const row = i % 7;
-    const x = col * step;
+    const x = (col - colFrom) * step;
     const y0 = row * step;
     const day = data.days[date];
     const total = stackTotal(day, hidden);
@@ -66,13 +74,28 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
         yTop -= hh;
         rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" fill="${data.sources[k].ink}"/>`);
       });
-      if ((day?.ai ?? 0) > 0 && !hidden.has('ai')) {
-        rects.push(`<rect class="ai" x="${x}" y="${y0 - o.gap}" width="${o.cell}" height="1" fill="${data.sources.ai.ink}"/>`);
-      }
     }
     parts.push(`<g class="day" data-date="${date}">${rects.join('')}</g>`);
   });
+  const width = (colTo - colFrom + 1) * step - o.gap;
+  parts.push(`<line class="baseline" x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}"/>`);
+  if (!hidden.has('ai')) {
+    dates.forEach((date, i) => {
+      const col = Math.floor(i / 7);
+      if (col < colFrom || col > colTo) return;
+      const day = data.days[date];
+      if (!(day?.ai ?? 0)) return;
+      const x = (col - colFrom) * step;
+      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="2" fill="${data.sources.ai.ink}"/>`);
+    });
+  }
   return parts.join('');
+}
+
+// Height in user units needed for a grid drawn with these options.
+export function gridHeight(o: { cell: number; gap: number }): number {
+  const step = o.cell + o.gap;
+  return 7 * step - o.gap + 1.5 + o.gap + 2 + 1;
 }
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -83,14 +106,16 @@ export function formatDate(date: string): string {
   return `${DOW[d.getUTCDay()]} ${MON[d.getUTCMonth()]} ${d.getUTCDate()}`;
 }
 
-export function monthLabels(year: number): Array<{ col: number; label: string }> {
+export function monthLabels(year: number, colFrom = 0, colTo = 52): Array<{ col: number; label: string }> {
   const dates = yearGrid(year);
   const out: Array<{ col: number; label: string }> = [];
   let last = '';
   dates.forEach((d, i) => {
     const m = d.slice(0, 7);
+    const col = Math.floor(i / 7);
     if (i % 7 === 0 && m !== last) {
-      if (d.slice(8, 10) <= '07') out.push({ col: Math.floor(i / 7), label: MON[Number(d.slice(5, 7)) - 1] });
+      const lastLabelCol = colTo === 52 ? colTo : colTo - 2; // labels overhang their column; keep them inside a slice
+      if (d.slice(8, 10) <= '07' && col >= colFrom && col <= lastLabelCol) out.push({ col: col - colFrom, label: MON[Number(d.slice(5, 7)) - 1] });
       last = m;
     }
   });

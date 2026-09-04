@@ -13,7 +13,7 @@ const ACCOUNT_START = '2012-04-16';
 const INCREMENTAL_DAYS = 60;
 const SOURCES = {
   cio: { label: 'Customer.io', ink: '#1f6f5f' },
-  vidyard: { label: 'Vidyard', ink: '#7a5c1e' },
+  vidyard: { label: 'Vidyard', ink: '#5c4310' },
   personal: { label: 'Personal', ink: '#b8432f' },
   ai: { label: 'AI-assisted', ink: '#2b2b2b' },
 };

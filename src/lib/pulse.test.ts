@@ -7,7 +7,7 @@ const data: PulseData = {
   cutover: '2025-12-03',
   sources: {
     cio: { label: 'Customer.io', ink: '#1f6f5f' },
-    vidyard: { label: 'Vidyard', ink: '#7a5c1e' },
+    vidyard: { label: 'Vidyard', ink: '#5c4310' },
     personal: { label: 'Personal', ink: '#b8432f' },
     ai: { label: 'AI-assisted', ink: '#2b2b2b' },
   },
@@ -24,7 +24,9 @@ test('yearGrid gives 371 dates covering Dec 31 for a past year, starting on a Su
 test('renderGrid emits one group per date and stacks sources', () => {
   const svg = renderGrid(data, 2026, new Set(), { cell: 10, gap: 2 });
   assert.equal((svg.match(/class="day"/g) ?? []).length, 371);
-  assert.match(svg, /data-date="2026-09-01"[^>]*>[\s\S]*?data-source="cio"[\s\S]*?data-source="personal"[\s\S]*?class="ai"/);
+  assert.match(svg, /data-date="2026-09-01"[^>]*>[\s\S]*?data-source="cio"[\s\S]*?data-source="personal"/);
+  assert.match(svg, /class="ai" data-date="2026-09-01"/);
+  assert.match(svg, /class="baseline"/);
 });
 
 test('hidden sources are not rendered', () => {
@@ -68,4 +70,12 @@ test('low counts still render a visible block', () => {
   const svg = renderGrid(data, 2026, new Set(), { cell: 11, gap: 3 });
   const m = svg.match(/data-date="2026-09-02"[^>]*>.*?data-source="cio"[^>]*height="(\d+)"/);
   assert.ok(m && Number(m[1]) >= 3, 'expected a block of at least 3px');
+});
+
+test('column slices re-base x to zero and only include their weeks', () => {
+  const full = renderGrid(data, 2019, new Set(), { cell: 10, gap: 2 });
+  const half = renderGrid(data, 2019, new Set(), { cell: 10, gap: 2, colFrom: 27, colTo: 52 });
+  assert.equal((half.match(/class="day"/g) ?? []).length, 26 * 7);
+  assert.equal((full.match(/class="day"/g) ?? []).length, 371);
+  assert.match(half, /class="day" data-date="[^"]+"><rect class="bg" x="0"/);
 });
