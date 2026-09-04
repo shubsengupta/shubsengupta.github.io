@@ -140,7 +140,7 @@ function modelBand(y: number, colFrom: number, colTo: number): string {
         const x = seg.colFrom * STEP;
         const w = (seg.colTo - seg.colFrom + 1) * STEP - GAP;
         const minW = colTo - colFrom < 52 ? 72 : 40; // half-year strips render at roughly half the pixels
-      const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
+        const label = w > minW ? `<text x="${x + 5}" y="10">${seg.top}</text>` : '';
         const title = seg.breakdown.map(([m, n]) => `${m}: ${n}`).join(', ');
         return `<g class="seg ${modelFamily(seg.top!)}" data-month="${seg.month}"><title>${seg.month}: ${title}</title><rect x="${x}" y="0" width="${w}" height="14" rx="3"/>${label}</g>`;
       })
