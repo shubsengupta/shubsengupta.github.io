@@ -79,15 +79,16 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed for others</dt></div>
   </dl>
 
+  <p class="mono careerlabel">By year, 2013 to today. Click one to see it above.</p>
   <div class="career" role="group" aria-label="Pick a year">
-    {totals.map((t) => (
+    {totals.map((t, i) => (
       <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} contributions`}>
         <span class="bar" aria-hidden="true">
           {(['agent', 'personal', 'indie', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
             <i data-source={k} style={`height:${Math.round(((t.by[k] ?? 0) / maxYear) * 100)}%`}></i>
           ))}
         </span>
-        <span class="mono lbl">{String(t.year).slice(2)}</span>
+        <span class={`mono lbl${i % 2 === totals.length % 2 ? ' alt' : ''}`}>{t.year}</span>
       </button>
     ))}
   </div>
@@ -294,7 +295,8 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .stats div.claude dd { color: var(--agent); }
   .stats dt span { color: var(--ink); font-weight: 600; }
 
-  .career { display: flex; gap: 0.35rem; align-items: flex-end; margin-top: 1.5rem; overflow-x: auto; }
+  .careerlabel { margin: 1.5rem 0 0.4rem; color: var(--faint); font-size: 0.68rem; }
+  .career { display: flex; gap: 0.35rem; align-items: flex-end; overflow-x: auto; }
   .yr { all: unset; cursor: pointer; flex: 1 1 0; min-width: 1.6rem; display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; padding: 0.25rem 0.15rem; border-radius: var(--r-m); transition: background 150ms ease; }
   .yr:hover { background: var(--surface); }
   .yr[aria-pressed="true"] { background: var(--surface); }
@@ -307,7 +309,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .bar i[data-source="personal"] { background: var(--personal); }
   .bar i[data-source="indie"] { background: var(--indie); }
   .bar i[data-source="agent"] { background: var(--agent); }
-  .lbl { text-align: center; color: var(--faint); font-size: 0.66rem; }
+  .lbl { text-align: center; color: var(--faint); font-size: 0.66rem; letter-spacing: -0.02em; }
 
   @media (max-width: 40rem) {
     .strip-full { display: none; }
@@ -318,8 +320,10 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     .legend { gap: 0.3rem; }
     .src { font-size: 0.76rem; padding: 0.2rem 0.6rem 0.2rem 0.3rem; }
     .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .yr { min-width: 0; padding: 0.2rem 0.05rem; overflow: hidden; }
+    .yr { min-width: 0; padding: 0.2rem 0.05rem; overflow: visible; }
     .lbl { font-size: 0.55rem; }
+    .lbl.alt { visibility: hidden; }
+    .yr[aria-pressed="true"] .lbl.alt { visibility: visible; }
     .career { gap: 0.2rem; overflow-x: visible; }
     .tip { display: none; }
   }
