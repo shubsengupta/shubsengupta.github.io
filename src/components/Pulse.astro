@@ -151,7 +151,7 @@ const months = monthLabels(year);
   .src[aria-pressed="false"] i { background: transparent; box-shadow: inset 0 0 0 1px var(--rule); }
   .gridwrap { overflow-x: auto; }
   .months { display: block; min-width: 40rem; margin-bottom: 2px; }
-  .months text { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
+  .months :global(text) { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
   #pulse-svg { display: block; min-width: 40rem; outline: none; }
   #pulse-svg:focus-visible { outline: 1px solid var(--ink); outline-offset: 6px; }
   #pulse-svg :global(.bg) { fill: #e9e2d6; }
