@@ -82,7 +82,7 @@ async function main() {
 
   const calendar = {};
   const firstYear = Number(from.slice(0, 4));
-  const lastYear = Math.min(Number(to.slice(0, 4)), Number(CUTOVER.slice(0, 4)));
+  const lastYear = Number(to.slice(0, 4));
   for (let y = firstYear; y <= lastYear; y++) Object.assign(calendar, await client.calendar(y));
   const inRange = Object.fromEntries(Object.entries(calendar).filter(([d]) => d >= from && d <= to));
 

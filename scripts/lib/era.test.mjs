@@ -12,7 +12,17 @@ test('pre-cutover days get vidyard = calendar - personal, floored at 0', () => {
   });
 });
 
-test('cutover day and later never get vidyard', () => {
+test('post-cutover days lift cio to calendar - personal, never below the searched count', () => {
+  const days = { '2026-08-06': { cio: 7, personal: 0, ai: 6 }, '2026-08-07': { cio: 4, personal: 1, ai: 2 } };
+  const calendar = { '2026-08-06': 15, '2026-08-07': 3, '2026-08-08': 2 };
+  assert.deepEqual(applyEra(days, calendar, '2025-12-03'), {
+    '2026-08-06': { cio: 15, personal: 0, ai: 6 },
+    '2026-08-07': { cio: 4, personal: 1, ai: 2 },
+    '2026-08-08': { cio: 2 },
+  });
+});
+
+test('cutover day itself belongs to the new employer', () => {
   const out = applyEra({}, { '2025-12-03': 4, '2025-12-02': 4 }, '2025-12-03');
-  assert.deepEqual(out, { '2025-12-02': { vidyard: 4 } });
+  assert.deepEqual(out, { '2025-12-02': { vidyard: 4 }, '2025-12-03': { cio: 4 } });
 });
