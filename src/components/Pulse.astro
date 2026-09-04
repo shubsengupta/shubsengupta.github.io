@@ -13,7 +13,7 @@ const year = years[0];
 const hidden = new Set<SourceKey>();
 const initialDate = latestActive(data);
 const s = stats(data, year, hidden);
-const legend: SourceKey[] = ['cio', 'vidyard', 'personal', 'agent'];
+const legend: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal', 'agent'];
 const totals = yearTotals(data);
 const maxYear = Math.max(...totals.map((t) => t.total), 1);
 
@@ -41,6 +41,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
         <button class="src" data-source={k} aria-pressed="true" style={`--ink:${data.sources[k].ink}`}>
           {k === 'cio' && <span class="mark cio" set:html={cioMark} />}
           {k === 'vidyard' && <span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="14" height="14" /></span>}
+          {k === 'indie' && <span class="mark indie"><i></i></span>}
           {k === 'personal' && <span class="mark personal"><i></i></span>}
           {k === 'agent' && <span class="mark agent" set:html={claudeMark} />}
           {data.sources[k].label}
@@ -82,7 +83,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     {totals.map((t) => (
       <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} contributions`}>
         <span class="bar" aria-hidden="true">
-          {(['agent', 'personal', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
+          {(['agent', 'personal', 'indie', 'vidyard', 'cio'] as SourceKey[]).map((k) => (
             <i data-source={k} style={`height:${Math.round(((t.by[k] ?? 0) / maxYear) * 100)}%`}></i>
           ))}
         </span>
@@ -91,7 +92,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Claude Code chats stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard, the Vidhub and freelance years, and personal projects. Claude Code chats stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
 </section>
 
 <script>
@@ -254,6 +255,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .mark.vidyard { background: #fff; border-radius: 999px; }
   .mark.vidyard img { width: 1.05rem; height: 1.05rem; border-radius: 999px; }
   .mark.personal i { width: 0.7rem; height: 0.7rem; border-radius: 3px; background: var(--personal); display: block; }
+  .mark.indie i { width: 0.7rem; height: 0.7rem; border-radius: 999px; background: var(--indie); display: block; }
   .mark.agent { color: var(--agent); }
   .mark.agent :global(svg) { width: 0.95rem; height: 0.95rem; }
   .src[aria-pressed="false"] { color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
@@ -303,6 +305,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .bar i[data-source="cio"] { background: var(--cio); }
   .bar i[data-source="vidyard"] { background: var(--vidyard); }
   .bar i[data-source="personal"] { background: var(--personal); }
+  .bar i[data-source="indie"] { background: var(--indie); }
   .bar i[data-source="agent"] { background: var(--agent); }
   .lbl { text-align: center; color: var(--faint); font-size: 0.66rem; }
 

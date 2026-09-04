@@ -7,13 +7,16 @@ import Footer from '../components/Footer.astro';
 import pulse from '../data/pulse.json';
 import claude from '../data/claude.json';
 import projects from '../data/projects.yaml';
+import timeline from '../data/timeline.yaml';
 import { getCollection } from 'astro:content';
 import { mergeClaude, type PulseData, type ClaudeData } from '../lib/pulse';
 import cioMark from '../assets/brand/customerio.svg?raw';
 
-type Project = { name: string; year: number; url: string; blurb: string };
+type Project = { name: string; year: number; blurb: string; link: string | null; linkLabel: string | null };
+type Stop = { from: number; to: number | 'now'; org: string; role: string; blurb: string };
 const data = mergeClaude(pulse as PulseData, claude as ClaudeData);
 const list = projects as Project[];
+const stops = timeline as Stop[];
 const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <Base title="Shub Sengupta">
@@ -21,23 +24,39 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
   <Pulse data={data} />
 
   <Section title="Who I am" id="who">
-    <p>I'm an engineering manager at <a href="https://customer.io" class="brand"><span class="mark cio" set:html={cioMark} />Customer.io</a>. My team builds Design Studio, the editor people use to make email, in-app and push content. Before that I was at <a href="https://www.vidyard.com" class="brand"><span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="16" height="16" /></span>Vidyard</a>.</p>
-    <p>I live in Toronto. I still ship a lot of code for a manager, most of it in long conversations with Claude Code. The chart above keeps score.</p>
+    <p>I'm an engineering manager at <a href="https://customer.io" class="brand"><span class="mark cio" set:html={cioMark} />Customer.io</a>, where I lead the Content and Frontend Platform teams. Content means the editors and Design Studio, and right now it means building agentic email creation: an agent that can make, fix and explain a message the way a person on the team would.</p>
+    <p>I live in Kitchener, Ontario. I still ship a lot of code for a manager, most of it in long conversations with Claude Code, and I spend a good part of the job trying models and workflows so my teams can work faster. The chart above keeps score.</p>
     <ul class="links">
       <li><a href="https://github.com/shubsengupta">GitHub</a></li>
-      <li><a href="https://www.linkedin.com/in/shubsengupta">LinkedIn</a></li>
+      <li><a href="https://www.linkedin.com/in/shubs/">LinkedIn</a></li>
       <li><a href="mailto:hi@shub.ca">hi@shub.ca</a></li>
     </ul>
   </Section>
 
-  <Section title="What I do" id="what">
-    <p>Design Studio at Customer.io: a visual editor with an agent inside it that fixes templates, matches your brand, and explains what is wrong with a draft. I run the team that builds it.</p>
-    <h3>Side projects</h3>
+  <Section title="Where I've been" id="been">
+    <ol class="stops">
+      {stops.map((s) => (
+        <li>
+          <span class="mono span">{s.from}<span class="dash">–</span>{s.to}</span>
+          <span>
+            <span class="org">{s.org}</span> <span class="role">{s.role}</span>
+            <span class="blurb">{s.blurb}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+    <p class="edu">Wilfrid Laurier University, 2011 to 2015. Mentor at the Laurier StartUp Lab since 2024.</p>
+  </Section>
+
+  <Section title="Things I've made" id="made">
     <ul class="projects">
       {list.map((p) => (
         <li>
           <span class="mono year">{p.year}</span>
-          <span><a href={p.url}>{p.name}</a> <span class="blurb">{p.blurb}</span></span>
+          <span>
+            <span class="org">{p.name}</span> <span class="blurb">{p.blurb}</span>
+            {p.link && <a class="more" href={p.link}>{p.linkLabel ?? 'link'}</a>}
+          </span>
         </li>
       ))}
     </ul>
@@ -67,16 +86,25 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
   .brand { display: inline-flex; align-items: center; gap: 0.3rem; text-decoration-color: transparent; }
   .brand:hover { text-decoration-color: var(--ink); }
   .mark { display: inline-grid; place-items: center; width: 1.15rem; height: 1.15rem; border-radius: 5px; vertical-align: -0.2em; }
-  .mark :global(svg), .mark img { width: 0.75rem; height: 0.75rem; display: block; }
+  .mark :global(svg) { width: 0.75rem; height: 0.75rem; display: block; }
   .mark.cio { background: var(--cio-tint); color: var(--cio); }
-  .mark.vidyard { background: #fff; border-radius: 999px; }
-  .mark.vidyard img { width: 1rem; height: 1rem; border-radius: 999px; }
-  h3 { margin: 1.75rem 0 0.6rem; font-size: 0.95rem; font-weight: 600; color: var(--muted); }
-  .projects li, .posts li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.75rem; margin: 0.5rem 0; }
-  .year { color: var(--faint); padding-top: 0.35rem; }
-  .blurb { color: var(--muted); }
+
+  .stops, .projects, .posts { list-style: none; padding: 0; margin: 0; }
+  .stops li, .projects li, .posts li { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.75rem; margin: 0 0 0.9rem; }
+  .projects li { grid-template-columns: 3.5rem 1fr; margin-bottom: 0.7rem; }
+  .span, .year { color: var(--faint); padding-top: 0.35rem; white-space: nowrap; }
+  .dash { margin: 0 0.1rem; }
+  .org { font-weight: 600; }
+  .role { color: var(--muted); }
+  .role::before { content: '· '; color: var(--faint); }
+  .blurb { display: block; color: var(--muted); }
+  .projects .blurb { display: inline; }
+  .more { color: var(--muted); font-size: 0.9rem; margin-left: 0.35rem; white-space: nowrap; }
+  .edu { margin-top: 1.25rem; color: var(--muted); font-size: 0.95rem; }
+
   #writing { padding: 0 1.5rem 2rem; }
   .empty-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; background: var(--surface); border-radius: var(--r-l); }
   .empty-row h2 { margin: 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
   .count { color: var(--muted); }
+  @media (max-width: 40rem) { .stops li { grid-template-columns: 1fr; gap: 0.1rem; } .span { padding-top: 0; } }
 </style>

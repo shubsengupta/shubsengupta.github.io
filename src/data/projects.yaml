@@ -1,16 +1,40 @@
+- name: letmepee
+  year: 2026
+  blurb: A macOS menu-bar alarm that arms the laptop's accelerometer so you can leave it at the café table. Sirens, air horns, and a Touch ID disarm.
+  link: null
+  linkLabel: null
+- name: Fix with Agent
+  year: 2026
+  blurb: Not on a roadmap, not a ticket. Customer.io's agent got a skill to fix broken Liquid, and a customer called it "living in the future" within days.
+  link: https://lnkd.in/p/gFFp5E_T
+  linkLabel: the post
 - name: l2claude
   year: 2026
-  url: https://github.com/shubsengupta/l2claude
   blurb: A daily AI-build challenge site. Astro, Vercel, Claude drafts the tasks.
+  link: https://github.com/shubsengupta/l2claude
+  linkLabel: repo
 - name: co
   year: 2026
-  url: https://github.com/shubsengupta/co
   blurb: A small Go CLI for the things I type too often.
-- name: practation
+  link: https://github.com/shubsengupta/co
+  linkLabel: repo
+- name: Air Chat
   year: 2015
-  url: https://github.com/shubsengupta/practation
-  blurb: Smart queue cards that help you ace a presentation.
+  blurb: Live event streaming with real-time sentiment analysis.
+  link: https://github.com/shubsengupta/air-chat
+  linkLabel: repo
+- name: Sunrise
+  year: 2014
+  blurb: A social alarm clock that matched you with someone else waking up, on video.
+  link: https://github.com/shubsengupta/sunrise
+  linkLabel: repo
+- name: Air Guitar
+  year: 2014
+  blurb: Myo armband plus an Android app. Best Myo hack at PennApps X.
+  link: null
+  linkLabel: null
 - name: twitterwall
   year: 2014
-  url: https://github.com/shubsengupta/twitterwall
   blurb: A conference twitter wall with schedule and notices. Became confwall.com.
+  link: https://github.com/shubsengupta/twitterwall
+  linkLabel: repo

@@ -1,4 +1,4 @@
-export type SourceKey = 'cio' | 'vidyard' | 'personal' | 'agent';
+export type SourceKey = 'cio' | 'vidyard' | 'indie' | 'personal' | 'agent';
 export type Day = Partial<Record<SourceKey | 'prs' | 'agentPrs' | 'tokens' | 'turns', number>> & { model?: string };
 export type ClaudeData = { generatedAt: string; days: Record<string, { chats?: number; turns?: number; outputTokens?: number; model?: string }> };
 export type PulseData = {
@@ -35,7 +35,8 @@ export function fmtTokens(n: number): string {
 }
 
 // Bottom to top: employer, personal, then Claude Code chats on top.
-const STACK: SourceKey[] = ['cio', 'vidyard', 'personal', 'agent'];
+const STACK: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal', 'agent'];
+const WORK: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal'];
 const DAY_MS = 86400000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const todayISO = () => iso(Date.now());
@@ -177,6 +178,7 @@ export function readout(data: PulseData, date: string): string {
   const bits: string[] = [];
   if (day?.cio) bits.push(`${day.cio} ${data.sources.cio.label}`);
   if (day?.vidyard) bits.push(`${day.vidyard} ${data.sources.vidyard.label}`);
+  if (day?.indie) bits.push(`${day.indie} ${data.sources.indie.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
   if (day?.prs) bits.push(`${day.prs} PR${day.prs === 1 ? '' : 's'}`);
   if (day?.agent) bits.push(`${day.agent} Claude chat${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`);
@@ -190,7 +192,7 @@ export function dayRows(data: PulseData, date: string): DayRow[] {
   const day = data.days[date];
   if (!day) return [];
   const rows: DayRow[] = [];
-  for (const k of ['cio', 'vidyard', 'personal'] as SourceKey[]) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
+  for (const k of WORK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
   if (day.prs) rows.push({ key: 'prs', label: day.prs === 1 ? 'PR opened' : 'PRs opened', ink: null, n: day.prs });
   if (day.agent) rows.push({ key: 'agent', label: `Claude chat${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`, ink: agentInk(day), n: day.agent });
   if (day.tokens) rows.push({ key: 'tokens', label: 'tokens from Claude', ink: null, n: fmtTokens(day.tokens) });
@@ -245,9 +247,9 @@ export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey
   const totals: Partial<Record<SourceKey, number>> = {};
   for (const [d, day] of Object.entries(data.days)) {
     if (!d.startsWith(String(year))) continue;
-    for (const k of ['cio', 'vidyard', 'personal'] as SourceKey[]) if (!hidden.has(k) && day[k]) totals[k] = (totals[k] ?? 0) + day[k]!;
+    for (const k of WORK) if (!hidden.has(k) && day[k]) totals[k] = (totals[k] ?? 0) + day[k]!;
   }
-  const labels = (['cio', 'vidyard', 'personal'] as SourceKey[]).filter((k) => totals[k]).map((k) => data.sources[k].label);
+  const labels = WORK.filter((k) => totals[k]).map((k) => data.sources[k].label);
   const bits = [String(year), `${s.contributions.toLocaleString('en-CA')} contributions`, ...labels];
   if (s.prs) bits.push(`${s.prs} PRs`);
   if (s.chats) bits.push(`${s.chats} Claude chats`);

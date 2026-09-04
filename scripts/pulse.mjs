@@ -14,6 +14,7 @@ const INCREMENTAL_DAYS = 60;
 const SOURCES = {
   cio: { label: 'Customer.io', ink: '#00262b' },
   vidyard: { label: 'Vidyard', ink: '#3bcb85' },
+  indie: { label: 'Vidhub & freelance', ink: '#8b98a3' },
   personal: { label: 'Personal', ink: '#3b6fe0' },
   agent: { label: 'Claude chats', ink: '#d97757' },
 };

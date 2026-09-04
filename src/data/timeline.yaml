@@ -1,0 +1,25 @@
+- from: 2025
+  to: now
+  org: Customer.io
+  role: Engineering Manager
+  blurb: Content (the editors and Design Studio) and Frontend Platform teams. Building agentic email creation and the tooling that lets my teams ship faster.
+- from: 2018
+  to: 2025
+  org: Vidyard
+  role: Developer, then PM, then Engineering Manager
+  blurb: Started on the analytics front end, ran product for the freemium launch, then led the teams behind Prospector (Vidyard's first LLM product), Campaigns and the Video Agent.
+- from: 2020
+  to: 2021
+  org: Pathways to Education
+  role: Product Lead
+  blurb: Took the Pathways Online Platform from concept to launch in under six months with a team of five.
+- from: 2012
+  to: 2020
+  org: Vidhub
+  role: Co-founder and CEO
+  blurb: Time-coded video review and collaboration for studios, agencies and classrooms.
+- from: 2010
+  to: 2018
+  org: LaunchVault Media and freelance
+  role: Video, photo and web
+  blurb: Filmed, photographed and built websites for organizations across Kitchener-Waterloo.

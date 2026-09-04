@@ -8,6 +8,7 @@ const data: PulseData = {
   sources: {
     cio: { label: 'Customer.io', ink: '#00262b' },
     vidyard: { label: 'Vidyard', ink: '#3bcb85' },
+    indie: { label: 'Vidhub & freelance', ink: '#8b98a3' },
     personal: { label: 'Personal', ink: '#3b6fe0' },
     agent: { label: 'Claude chats', ink: '#d97757' },
   },
@@ -16,6 +17,7 @@ const data: PulseData = {
     '2026-09-02': { cio: 1 },
     '2026-09-03': { cio: 2, prs: 1, agentPrs: 1, agent: 1, model: 'Opus 5' },
     '2019-03-12': { vidyard: 6 },
+    '2015-05-01': { indie: 4 },
   },
   years: { '2026': { reviews: 137 } },
 };
@@ -66,7 +68,7 @@ test('stats count contributions without the agent layer, plus PRs, agent share a
 test('availableYears spans data to now', () => {
   const ys = availableYears(data);
   assert.equal(ys[0], new Date().getUTCFullYear());
-  assert.equal(ys.at(-1), 2019);
+  assert.equal(ys.at(-1), 2015);
 });
 
 test('scale uses p95 with a floor of 1', () => {
@@ -100,9 +102,11 @@ test('column slices re-base x to zero and only include their weeks', () => {
 
 test('yearTotals covers every year from first data to now, oldest first', () => {
   const ys = yearTotals(data);
-  assert.equal(ys[0].year, 2019);
+  assert.equal(ys[0].year, 2015);
   assert.equal(ys.at(-1)!.year, new Date().getUTCFullYear());
-  assert.deepEqual(ys[0].by, { vidyard: 6 });
+  assert.deepEqual(ys[0].by, { indie: 4 });
+  assert.deepEqual(ys.find((y) => y.year === 2019)!.by, { vidyard: 6 });
+  assert.equal(readout(data, '2015-05-01'), 'Fri May 1 · 4 Vidhub & freelance');
   assert.equal(ys.find((y) => y.year === 2026)!.total, 22);
 });
 

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-04T19:45:30.031Z",
+ "generatedAt": "2026-09-04T20:04:39.117Z",
  "cutover": "2025-12-03",
  "sources": {
   "cio": {
@@ -9,6 +9,10 @@
   "vidyard": {
    "label": "Vidyard",
    "ink": "#3bcb85"
+  },
+  "indie": {
+   "label": "Vidhub & freelance",
+   "ink": "#8b98a3"
   },
   "personal": {
    "label": "Personal",
@@ -21,113 +25,113 @@
  },
  "days": {
   "2013-05-04": {
-   "vidyard": 1
+   "indie": 1
   },
   "2013-11-08": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-01-28": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-02-05": {
-   "vidyard": 2
+   "indie": 2
   },
   "2014-02-22": {
-   "vidyard": 5
+   "indie": 5
   },
   "2014-02-23": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-04-22": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-04-25": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-04-26": {
-   "vidyard": 3
+   "indie": 3
   },
   "2014-04-28": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-05-08": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-05-17": {
-   "vidyard": 15
+   "indie": 15
   },
   "2014-05-18": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-05-20": {
-   "vidyard": 6
+   "indie": 6
   },
   "2014-05-21": {
-   "vidyard": 3
+   "indie": 3
   },
   "2014-05-22": {
-   "vidyard": 12
+   "indie": 12
   },
   "2014-05-26": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-06-01": {
-   "vidyard": 6
+   "indie": 6
   },
   "2014-06-04": {
-   "vidyard": 2
+   "indie": 2
   },
   "2014-06-05": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-06-06": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-06-07": {
-   "vidyard": 14
+   "indie": 14
   },
   "2014-06-09": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-06-10": {
-   "vidyard": 3
+   "indie": 3
   },
   "2014-06-11": {
-   "vidyard": 14
+   "indie": 14
   },
   "2014-06-12": {
-   "vidyard": 3
+   "indie": 3
   },
   "2014-06-16": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-06-25": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-07-02": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-07-04": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-07-05": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-07-06": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-07-07": {
-   "vidyard": 2
+   "indie": 2
   },
   "2014-07-09": {
-   "vidyard": 2
+   "indie": 2
   },
   "2014-07-16": {
-   "vidyard": 5
+   "indie": 5
   },
   "2014-07-20": {
    "personal": 1,
-   "vidyard": 1
+   "indie": 1
   },
   "2014-07-21": {
    "personal": 5
@@ -136,7 +140,7 @@
    "personal": 6
   },
   "2014-08-03": {
-   "vidyard": 5
+   "indie": 5
   },
   "2014-08-18": {
    "personal": 1
@@ -157,7 +161,7 @@
    "personal": 7
   },
   "2014-09-06": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-09-08": {
    "personal": 4
@@ -170,28 +174,28 @@
   },
   "2014-09-20": {
    "personal": 21,
-   "vidyard": 1
+   "indie": 1
   },
   "2014-09-21": {
    "personal": 1
   },
   "2014-09-28": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-10-30": {
    "personal": 2
   },
   "2014-11-07": {
-   "vidyard": 7
+   "indie": 7
   },
   "2014-11-11": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-11-15": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-11-22": {
-   "vidyard": 4
+   "indie": 4
   },
   "2014-11-23": {
    "personal": 2
@@ -200,233 +204,233 @@
    "personal": 1
   },
   "2014-11-25": {
-   "vidyard": 10
+   "indie": 10
   },
   "2014-12-03": {
-   "vidyard": 1
+   "indie": 1
   },
   "2014-12-13": {
-   "vidyard": 6
+   "indie": 6
   },
   "2014-12-14": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-01-17": {
-   "vidyard": 24
+   "indie": 24
   },
   "2015-01-18": {
-   "vidyard": 16
+   "indie": 16
   },
   "2015-01-27": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-01-28": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-01-29": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-01-30": {
-   "vidyard": 7
+   "indie": 7
   },
   "2015-01-31": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-02-02": {
-   "vidyard": 11
+   "indie": 11
   },
   "2015-02-04": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-02-05": {
-   "vidyard": 5
+   "indie": 5
   },
   "2015-02-07": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-02-10": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-02-11": {
-   "vidyard": 7
+   "indie": 7
   },
   "2015-02-12": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-02-13": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-02-24": {
-   "vidyard": 11
+   "indie": 11
   },
   "2015-02-25": {
-   "vidyard": 5
+   "indie": 5
   },
   "2015-02-26": {
-   "vidyard": 5
+   "indie": 5
   },
   "2015-03-13": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-04-11": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-04-17": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-04-30": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-05-02": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-05-04": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-05-06": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-05-09": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-05-26": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-05-27": {
-   "vidyard": 7
+   "indie": 7
   },
   "2015-05-28": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-05-29": {
-   "vidyard": 7
+   "indie": 7
   },
   "2015-05-31": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-06-01": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-06-02": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-06-03": {
-   "vidyard": 5
+   "indie": 5
   },
   "2015-06-04": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-06-05": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-06-07": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-06-10": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-06-11": {
    "personal": 4,
-   "vidyard": 2
+   "indie": 2
   },
   "2015-06-16": {
    "personal": 1,
-   "vidyard": 1
+   "indie": 1
   },
   "2015-06-17": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-06-18": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-06-19": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-06-22": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-06-23": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-06-24": {
    "personal": 1
   },
   "2015-06-26": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-07-01": {
-   "vidyard": 10
+   "indie": 10
   },
   "2015-07-03": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-07-04": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-07-05": {
-   "vidyard": 13
+   "indie": 13
   },
   "2015-07-08": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-07-09": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-07-12": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-07-13": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-07-18": {
-   "vidyard": 7
+   "indie": 7
   },
   "2015-07-19": {
-   "vidyard": 15
+   "indie": 15
   },
   "2015-07-22": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-07-24": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-07-26": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-07-27": {
-   "vidyard": 14
+   "indie": 14
   },
   "2015-07-28": {
-   "vidyard": 14
+   "indie": 14
   },
   "2015-07-30": {
-   "vidyard": 11
+   "indie": 11
   },
   "2015-07-31": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-08-05": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-08-06": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-08-07": {
-   "vidyard": 10
+   "indie": 10
   },
   "2015-08-13": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-08-19": {
    "personal": 1,
-   "vidyard": 4
+   "indie": 4
   },
   "2015-08-21": {
    "personal": 3
   },
   "2015-08-24": {
    "personal": 6,
-   "vidyard": 2
+   "indie": 2
   },
   "2015-09-09": {
    "personal": 3
@@ -436,418 +440,418 @@
   },
   "2015-09-12": {
    "personal": 24,
-   "vidyard": 1
+   "indie": 1
   },
   "2015-09-13": {
    "personal": 3
   },
   "2015-09-19": {
    "personal": 35,
-   "vidyard": 1
+   "indie": 1
   },
   "2015-09-23": {
    "personal": 7
   },
   "2015-09-30": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-10-02": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-10-04": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-10-06": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-10-07": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-10-08": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-10-09": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-10-13": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-10-16": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-10-25": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-10-26": {
-   "vidyard": 9
+   "indie": 9
   },
   "2015-10-27": {
-   "vidyard": 5
+   "indie": 5
   },
   "2015-10-28": {
-   "vidyard": 8
+   "indie": 8
   },
   "2015-10-29": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-10-30": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-11-03": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-11-04": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-11-05": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-11-06": {
-   "vidyard": 2
+   "indie": 2
   },
   "2015-11-07": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-11-12": {
-   "vidyard": 4
+   "indie": 4
   },
   "2015-11-16": {
-   "vidyard": 3
+   "indie": 3
   },
   "2015-11-18": {
-   "vidyard": 6
+   "indie": 6
   },
   "2015-11-21": {
-   "vidyard": 1
+   "indie": 1
   },
   "2015-11-30": {
    "personal": 1
   },
   "2016-01-10": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-01-13": {
-   "vidyard": 5
+   "indie": 5
   },
   "2016-01-15": {
-   "vidyard": 8
+   "indie": 8
   },
   "2016-01-20": {
-   "vidyard": 5
+   "indie": 5
   },
   "2016-01-21": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-02-26": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-03-02": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-03-07": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-03-10": {
-   "vidyard": 7
+   "indie": 7
   },
   "2016-03-11": {
-   "vidyard": 5
+   "indie": 5
   },
   "2016-03-12": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-07-12": {
-   "vidyard": 3
+   "indie": 3
   },
   "2016-07-13": {
-   "vidyard": 2
+   "indie": 2
   },
   "2016-07-14": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-07-19": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-07-20": {
    "personal": 2,
-   "vidyard": 1
+   "indie": 1
   },
   "2016-07-24": {
-   "vidyard": 2
+   "indie": 2
   },
   "2016-07-28": {
-   "vidyard": 10
+   "indie": 10
   },
   "2016-08-09": {
-   "vidyard": 3
+   "indie": 3
   },
   "2016-08-18": {
-   "vidyard": 7
+   "indie": 7
   },
   "2016-10-13": {
    "personal": 2
   },
   "2016-10-22": {
-   "vidyard": 1
+   "indie": 1
   },
   "2016-11-03": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-11-04": {
-   "vidyard": 2
+   "indie": 2
   },
   "2016-11-10": {
-   "vidyard": 12
+   "indie": 12
   },
   "2016-11-11": {
-   "vidyard": 2
+   "indie": 2
   },
   "2016-11-22": {
-   "vidyard": 7
+   "indie": 7
   },
   "2016-11-25": {
-   "vidyard": 2
+   "indie": 2
   },
   "2016-11-29": {
-   "vidyard": 6
+   "indie": 6
   },
   "2016-12-08": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-12-13": {
-   "vidyard": 6
+   "indie": 6
   },
   "2016-12-15": {
-   "vidyard": 7
+   "indie": 7
   },
   "2016-12-16": {
-   "vidyard": 3
+   "indie": 3
   },
   "2016-12-20": {
-   "vidyard": 3
+   "indie": 3
   },
   "2016-12-21": {
-   "vidyard": 5
+   "indie": 5
   },
   "2016-12-22": {
-   "vidyard": 4
+   "indie": 4
   },
   "2016-12-23": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-01-19": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-01-20": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-01-23": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-01-24": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-01-25": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-01-26": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-01-27": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-01-30": {
-   "vidyard": 14
+   "indie": 14
   },
   "2017-02-01": {
-   "vidyard": 15
+   "indie": 15
   },
   "2017-02-02": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-02-03": {
-   "vidyard": 8
+   "indie": 8
   },
   "2017-02-06": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-02-07": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-02-08": {
-   "vidyard": 6
+   "indie": 6
   },
   "2017-02-09": {
-   "vidyard": 9
+   "indie": 9
   },
   "2017-02-10": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-02-13": {
-   "vidyard": 12
+   "indie": 12
   },
   "2017-02-15": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-02-16": {
-   "vidyard": 9
+   "indie": 9
   },
   "2017-02-17": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-02-21": {
-   "vidyard": 6
+   "indie": 6
   },
   "2017-02-22": {
-   "vidyard": 11
+   "indie": 11
   },
   "2017-02-23": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-02-24": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-02-27": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-02-28": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-03-01": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-03-02": {
-   "vidyard": 6
+   "indie": 6
   },
   "2017-03-03": {
-   "vidyard": 7
+   "indie": 7
   },
   "2017-03-06": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-03-07": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-03-08": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-03-10": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-03-14": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-03-15": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-03-17": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-03-27": {
-   "vidyard": 8
+   "indie": 8
   },
   "2017-03-29": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-03-30": {
-   "vidyard": 10
+   "indie": 10
   },
   "2017-04-03": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-04-04": {
-   "vidyard": 14
+   "indie": 14
   },
   "2017-04-05": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-04-06": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-04-07": {
-   "vidyard": 3
+   "indie": 3
   },
   "2017-04-11": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-04-12": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-04-17": {
-   "vidyard": 9
+   "indie": 9
   },
   "2017-04-18": {
-   "vidyard": 12
+   "indie": 12
   },
   "2017-04-19": {
-   "vidyard": 12
+   "indie": 12
   },
   "2017-04-20": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-04-21": {
-   "vidyard": 13
+   "indie": 13
   },
   "2017-04-24": {
-   "vidyard": 14
+   "indie": 14
   },
   "2017-05-01": {
-   "vidyard": 4
+   "indie": 4
   },
   "2017-05-02": {
-   "vidyard": 5
+   "indie": 5
   },
   "2017-05-04": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-05-05": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-05-09": {
-   "vidyard": 9
+   "indie": 9
   },
   "2017-05-12": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-05-15": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-05-18": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-05-24": {
-   "vidyard": 7
+   "indie": 7
   },
   "2017-05-26": {
-   "vidyard": 6
+   "indie": 6
   },
   "2017-05-30": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-06-02": {
-   "vidyard": 2
+   "indie": 2
   },
   "2017-06-14": {
    "personal": 4
   },
   "2017-08-14": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-11-08": {
    "personal": 1
   },
   "2017-12-12": {
    "personal": 7,
-   "vidyard": 1
+   "indie": 1
   },
   "2017-12-19": {
-   "vidyard": 1
+   "indie": 1
   },
   "2017-12-22": {
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-02": {
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-03": {
    "personal": 6
@@ -856,7 +860,7 @@
    "personal": 1
   },
   "2018-01-09": {
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-10": {
    "personal": 5
@@ -866,19 +870,19 @@
   },
   "2018-01-12": {
    "personal": 3,
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-15": {
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-16": {
-   "vidyard": 1
+   "indie": 1
   },
   "2018-01-17": {
    "personal": 3
   },
   "2018-01-19": {
-   "vidyard": 4
+   "indie": 4
   },
   "2018-01-21": {
    "personal": 2
@@ -924,11 +928,13 @@
   },
   "2018-03-01": {
    "personal": 10,
-   "vidyard": 2
+   "prs": 1,
+   "indie": 2
   },
   "2018-03-02": {
    "personal": 6,
-   "vidyard": 1
+   "prs": 1,
+   "indie": 1
   },
   "2018-03-05": {
    "personal": 2
@@ -941,7 +947,8 @@
   },
   "2018-03-21": {
    "personal": 9,
-   "vidyard": 1
+   "prs": 1,
+   "indie": 1
   },
   "2018-03-22": {
    "personal": 3
@@ -957,7 +964,7 @@
   },
   "2018-04-18": {
    "personal": 5,
-   "vidyard": 1
+   "indie": 1
   },
   "2018-04-23": {
    "personal": 1
@@ -1000,14 +1007,14 @@
   },
   "2018-07-25": {
    "personal": 5,
-   "vidyard": 1
+   "indie": 1
   },
   "2018-08-07": {
    "personal": 5
   },
   "2018-08-15": {
    "personal": 7,
-   "vidyard": 1
+   "indie": 1
   },
   "2018-08-16": {
    "personal": 1
