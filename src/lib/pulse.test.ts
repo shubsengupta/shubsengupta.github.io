@@ -1,0 +1,60 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, type PulseData } from './pulse.ts';
+
+const data: PulseData = {
+  generatedAt: '2026-09-04T00:00:00Z',
+  cutover: '2025-12-03',
+  sources: {
+    cio: { label: 'Customer.io', ink: '#1f6f5f' },
+    vidyard: { label: 'Vidyard', ink: '#7a5c1e' },
+    personal: { label: 'Personal', ink: '#b8432f' },
+    ai: { label: 'AI-assisted', ink: '#2b2b2b' },
+  },
+  days: { '2026-09-01': { cio: 14, personal: 2, ai: 9 }, '2026-09-02': { cio: 1 }, '2019-03-12': { vidyard: 6 } },
+};
+
+test('yearGrid gives 371 dates covering Dec 31 for a past year, starting on a Sunday', () => {
+  const g = yearGrid(2019);
+  assert.equal(g.length, 371);
+  assert.equal(g.includes('2019-12-31'), true);
+  assert.equal(new Date(g[0] + 'T00:00:00Z').getUTCDay(), 0);
+});
+
+test('renderGrid emits one group per date and stacks sources', () => {
+  const svg = renderGrid(data, 2026, new Set(), { cell: 10, gap: 2 });
+  assert.equal((svg.match(/class="day"/g) ?? []).length, 371);
+  assert.match(svg, /data-date="2026-09-01"[^>]*>[\s\S]*?data-source="cio"[\s\S]*?data-source="personal"[\s\S]*?class="ai"/);
+});
+
+test('hidden sources are not rendered', () => {
+  const svg = renderGrid(data, 2026, new Set(['personal']), { cell: 10, gap: 2 });
+  assert.doesNotMatch(svg, /data-source="personal"/);
+});
+
+test('readout formats a day', () => {
+  assert.equal(readout(data, '2026-09-01'), 'Tue Sep 1 · 14 Customer.io · 2 personal · 9 AI-assisted');
+  assert.equal(readout(data, '2026-09-03'), 'Thu Sep 3 · quiet');
+});
+
+test('stats', () => {
+  const s = stats(data, 2026, new Set());
+  assert.deepEqual(s.busiest, { date: '2026-09-01', total: 16 });
+  assert.equal(s.aiShare, Math.round((9 / 17) * 100));
+});
+
+test('availableYears spans data to now', () => {
+  const ys = availableYears(data);
+  assert.equal(ys[0], new Date().getUTCFullYear());
+  assert.equal(ys.at(-1), 2019);
+});
+
+test('scale uses p95 with a floor of 1', () => {
+  assert.equal(scale(data, ['2026-09-03'], new Set()), 1);
+});
+
+test('monthLabels gives one label per month in the grid', () => {
+  const labels = monthLabels(2019);
+  assert.equal(labels.length >= 12, true);
+  assert.equal(labels.at(-1)!.label, 'Dec');
+});
