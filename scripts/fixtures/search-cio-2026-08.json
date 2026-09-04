@@ -1,0 +1,5 @@
+[
+  { "commit": { "message": "CON-1 thing\n\nCo-authored-by: Claude Fable 5 <noreply@anthropic.com>", "author": { "date": "2026-08-06T10:56:42.000-04:00" } } },
+  { "commit": { "message": "plain", "author": { "date": "2026-08-06T15:00:00.000-04:00" } } },
+  { "commit": { "message": "plain", "author": { "date": "2026-08-10T09:00:00.000-04:00" } } }
+]

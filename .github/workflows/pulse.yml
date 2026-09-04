@@ -1,0 +1,30 @@
+name: pulse
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: Rebuild all history
+        type: boolean
+        default: false
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/pulse.mjs ${{ inputs.full && '--full' || '' }}
+        env:
+          PULSE_TOKEN: ${{ secrets.PULSE_TOKEN }}
+      - run: |
+          git config user.name pulse-bot
+          git config user.email pulse-bot@shub.ca
+          git add src/data/pulse.json
+          git diff --cached --quiet && exit 0
+          git commit -m "pulse: refresh $(date -u +%F)"
+          git push

@@ -1,0 +1,110 @@
+---
+import Base from '../layouts/Base.astro';
+import Masthead from '../components/Masthead.astro';
+import Pulse from '../components/Pulse.astro';
+import Section from '../components/Section.astro';
+import Footer from '../components/Footer.astro';
+import pulse from '../data/pulse.json';
+import claude from '../data/claude.json';
+import projects from '../data/projects.yaml';
+import timeline from '../data/timeline.yaml';
+import { getCollection } from 'astro:content';
+import { mergeClaude, type PulseData, type ClaudeData } from '../lib/pulse';
+import cioMark from '../assets/brand/customerio.svg?raw';
+
+type Project = { name: string; year: number; blurb: string; link: string | null; linkLabel: string | null };
+type Stop = { from: number; to: number | 'now'; org: string; role: string; blurb: string };
+const data = mergeClaude(pulse as PulseData, claude as ClaudeData);
+const list = projects as Project[];
+const stops = timeline as Stop[];
+const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="Shub Sengupta">
+  <Masthead />
+  <Pulse data={data} />
+
+  <Section title="Who I am" id="who">
+    <p>I'm an engineering manager at <a href="https://customer.io" class="brand"><span class="mark cio" set:html={cioMark} />Customer.io</a>, where I lead the Content and Frontend Platform teams. Content means the editors and Design Studio, and right now it means building agentic email creation: an agent that can make, fix and explain a message the way a person on the team would.</p>
+    <p>I live in Kitchener, Ontario. I still ship a lot of code for a manager, most of it in long conversations with Claude Code, and I spend a good part of the job trying models and workflows so my teams can work faster. The chart above keeps score.</p>
+    <ul class="links">
+      <li><a href="https://github.com/shubsengupta">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/shubs/">LinkedIn</a></li>
+      <li><a href="mailto:hi@shub.ca">hi@shub.ca</a></li>
+    </ul>
+  </Section>
+
+  <Section title="Where I've been" id="been">
+    <ol class="stops">
+      {stops.map((s) => (
+        <li>
+          <span class="mono span">{s.from}<span class="dash">–</span>{s.to}</span>
+          <span>
+            <span class="org">{s.org}</span> <span class="role">{s.role}</span>
+            <span class="blurb">{s.blurb}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+    <p class="edu">Wilfrid Laurier University, 2011 to 2015. Mentor at the Laurier StartUp Lab since 2024.</p>
+  </Section>
+
+  <Section title="Things I've made" id="made">
+    <ul class="projects">
+      {list.map((p) => (
+        <li>
+          <span class="mono year">{p.year}</span>
+          <span>
+            <span class="org">{p.name}</span> <span class="blurb">{p.blurb}</span>
+            {p.link && <a class="more" href={p.link}>{p.linkLabel ?? 'link'}</a>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  {posts.length === 0 ? (
+    <section class="wrap" id="writing" aria-labelledby="writing-h">
+      <div class="empty-row">
+        <h2 id="writing-h">Writing</h2>
+        <a class="mono count" href="/writing/">0 entries</a>
+      </div>
+    </section>
+  ) : (
+    <Section title="Writing" id="writing">
+      <ul class="posts">
+        {posts.map((p) => (
+          <li><span class="mono year">{p.data.date.toISOString().slice(0, 10)}</span> <a href={`/writing/${p.id}/`}>{p.data.title}</a></li>
+        ))}
+      </ul>
+    </Section>
+  )}
+
+  <Footer refreshed={data.generatedAt} claudeRefreshed={data.claudeGeneratedAt} />
+</Base>
+<style>
+  .links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .brand { display: inline-flex; align-items: center; gap: 0.3rem; text-decoration-color: transparent; }
+  .brand:hover { text-decoration-color: var(--ink); }
+  .mark { display: inline-grid; place-items: center; width: 1.15rem; height: 1.15rem; border-radius: 5px; vertical-align: -0.2em; }
+  .mark :global(svg) { width: 0.75rem; height: 0.75rem; display: block; }
+  .mark.cio { background: var(--cio-tint); color: var(--cio); }
+
+  .stops, .projects, .posts { list-style: none; padding: 0; margin: 0; }
+  .stops li, .projects li, .posts li { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.75rem; margin: 0 0 0.9rem; }
+  .projects li { grid-template-columns: 3.5rem 1fr; margin-bottom: 0.7rem; }
+  .span, .year { color: var(--faint); padding-top: 0.35rem; white-space: nowrap; }
+  .dash { margin: 0 0.1rem; }
+  .org { font-weight: 600; }
+  .role { color: var(--muted); }
+  .role::before { content: '· '; color: var(--faint); }
+  .blurb { display: block; color: var(--muted); }
+  .projects .blurb { display: inline; }
+  .more { color: var(--muted); font-size: 0.9rem; margin-left: 0.35rem; white-space: nowrap; }
+  .edu { margin-top: 1.25rem; color: var(--muted); font-size: 0.95rem; }
+
+  #writing { padding: 0 1.5rem 2rem; }
+  .empty-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; background: var(--surface); border-radius: var(--r-l); }
+  .empty-row h2 { margin: 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+  .count { color: var(--muted); }
+  @media (max-width: 40rem) { .stops li { grid-template-columns: 1fr; gap: 0.1rem; } .span { padding-top: 0; } }
+</style>

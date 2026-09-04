@@ -1,0 +1,36 @@
+:root {
+  --bg: #eef2f5;
+  --surface: #e0e7ec;
+  --surface-2: #d2dbe2;
+  --ink: #101820;
+  --muted: #5c6b78;
+  --faint: #8b98a3;
+  --line: #cfd8df;
+  --cio: #00262b;
+  --cio-tint: #bdffbd;
+  --vidyard: #3bcb85;
+  --indie: #8b98a3;
+  --personal: #3b6fe0;
+  --agent: #d97757;
+  --sans: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'Azeret Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r-s: 4px;
+  --r-m: 8px;
+  --r-l: 14px;
+  --measure: 60ch;
+}
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+body { margin: 0; }
+a { color: inherit; text-decoration-color: var(--faint); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+.mono { font-family: var(--mono); font-size: 0.74rem; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+:focus-visible { outline: 2px solid var(--cio); outline-offset: 3px; border-radius: var(--r-s); }
