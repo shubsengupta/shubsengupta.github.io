@@ -27,3 +27,15 @@ test('writing is wired but empty', async ({ page }) => {
   const rss = await page.request.get('/rss.xml');
   expect(rss.status()).toBe(200);
 });
+
+test('career strip picks a year and tooltip follows hover', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.yr[data-year="2019"]').click();
+  await expect(page.locator('#pulse-year')).toHaveText('2019');
+  await expect(page.locator('#pulse-readout')).toContainText('2019');
+  await expect(page.locator('#pulse-svg [data-source="vidyard"]').first()).toBeAttached();
+  const active = page.locator('#pulse-svg .day:has([data-source])').last();
+  await active.hover();
+  await expect(page.locator('#pulse-tip')).toBeVisible();
+  await expect(page.locator('#pulse-tip')).toContainText('Vidyard');
+});

@@ -72,10 +72,10 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
         if (hh === 0) return;
         used += hh;
         yTop -= hh;
-        rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" fill="${data.sources[k].ink}"/>`);
+        rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" rx="${idx === visible.length - 1 ? 2 : 0}" fill="${data.sources[k].ink}"/>`);
       });
     }
-    parts.push(`<g class="day" data-date="${date}">${rects.join('')}</g>`);
+    parts.push(`<g class="day" data-date="${date}" style="--c:${col - colFrom}">${rects.join('')}</g>`);
   });
   const width = (colTo - colFrom + 1) * step - o.gap;
   parts.push(`<line class="baseline" x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}"/>`);
@@ -86,7 +86,7 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
       const day = data.days[date];
       if (!(day?.ai ?? 0)) return;
       const x = (col - colFrom) * step;
-      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="2" fill="${data.sources.ai.ink}"/>`);
+      parts.push(`<rect class="ai" data-date="${date}" x="${x}" y="${baselineY + o.gap}" width="${o.cell}" height="2" rx="1" fill="${data.sources.ai.ink}"/>`);
     });
   }
   return parts.join('');
@@ -184,4 +184,30 @@ export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey
   }
   const labels = STACK.filter((k) => totals[k]).map((k) => data.sources[k].label);
   return [String(year), `${commits.toLocaleString('en-CA')} commits`, ...labels].join(' · ');
+}
+
+export type YearTotal = { year: number; total: number; by: Partial<Record<SourceKey, number>> };
+
+// Yearly totals for the career strip, oldest first, including empty years.
+export function yearTotals(data: PulseData): YearTotal[] {
+  const map = new Map<number, YearTotal>();
+  for (const y of availableYears(data)) map.set(y, { year: y, total: 0, by: {} });
+  for (const [d, day] of Object.entries(data.days)) {
+    const t = map.get(Number(d.slice(0, 4)));
+    if (!t) continue;
+    for (const k of STACK) {
+      if (!day[k]) continue;
+      t.by[k] = (t.by[k] ?? 0) + day[k]!;
+      t.total += day[k]!;
+    }
+  }
+  return [...map.values()].sort((a, b) => a.year - b.year);
+}
+
+export function dayRows(data: PulseData, date: string): Array<{ key: SourceKey; label: string; ink: string; n: number }> {
+  const day = data.days[date];
+  if (!day) return [];
+  return (['cio', 'vidyard', 'personal', 'ai'] as SourceKey[])
+    .filter((k) => day[k])
+    .map((k) => ({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! }));
 }

@@ -1,15 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, type PulseData } from './pulse.ts';
+import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, type PulseData } from './pulse.ts';
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z',
   cutover: '2025-12-03',
   sources: {
-    cio: { label: 'Customer.io', ink: '#1f6f5f' },
-    vidyard: { label: 'Vidyard', ink: '#5c4310' },
-    personal: { label: 'Personal', ink: '#b8432f' },
-    ai: { label: 'AI-assisted', ink: '#2b2b2b' },
+    cio: { label: 'Customer.io', ink: '#6b4df6' },
+    vidyard: { label: 'Vidyard', ink: '#14a37f' },
+    personal: { label: 'Personal', ink: '#f0a12e' },
+    ai: { label: 'AI-assisted', ink: '#101820' },
   },
   days: { '2026-09-01': { cio: 14, personal: 2, ai: 9 }, '2026-09-02': { cio: 1 }, '2019-03-12': { vidyard: 6 } },
 };
@@ -77,11 +77,25 @@ test('column slices re-base x to zero and only include their weeks', () => {
   const half = renderGrid(data, 2019, new Set(), { cell: 10, gap: 2, colFrom: 27, colTo: 52 });
   assert.equal((half.match(/class="day"/g) ?? []).length, 26 * 7);
   assert.equal((full.match(/class="day"/g) ?? []).length, 371);
-  assert.match(half, /class="day" data-date="[^"]+"><rect class="bg" x="0"/);
+  assert.match(half, /class="day" data-date="[^"]+" style="--c:0"><rect class="bg" x="0"/);
 });
 
 test('a sliced strip labels its first column', () => {
   const labels = monthLabels(2019, 27, 52);
   assert.equal(labels[0].col, 0);
   assert.equal(labels.filter((l) => l.col === 0).length, 1);
+});
+
+test('yearTotals covers every year from first data to now, oldest first', () => {
+  const ys = yearTotals(data);
+  assert.equal(ys[0].year, 2019);
+  assert.equal(ys.at(-1)!.year, new Date().getUTCFullYear());
+  assert.deepEqual(ys[0].by, { vidyard: 6 });
+  assert.equal(ys.find((y) => y.year === 2026)!.total, 17);
+});
+
+test('dayRows lists the sources present on a day', () => {
+  assert.deepEqual(dayRows(data, '2026-09-02').map((r) => r.key), ['cio']);
+  assert.deepEqual(dayRows(data, '2026-09-01').map((r) => [r.key, r.n]), [['cio', 14], ['personal', 2], ['ai', 9]]);
+  assert.deepEqual(dayRows(data, '2026-09-03'), []);
 });

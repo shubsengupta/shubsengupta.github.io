@@ -4,7 +4,7 @@ const now = fmt.format(new Date()).replace(',', '');
 ---
 <header class="masthead wrap">
   <a href="/" class="name"><h1>Shub Sengupta</h1></a>
-  <p class="mono where">Toronto · <time id="clock" datetime={new Date().toISOString()}>{now}</time></p>
+  <p class="mono where">Toronto <time id="clock" datetime={new Date().toISOString()}>{now}</time></p>
 </header>
 <script>
   const el = document.getElementById('clock');
@@ -14,8 +14,9 @@ const now = fmt.format(new Date()).replace(',', '');
   setInterval(tick, 15_000);
 </script>
 <style>
-  .masthead { display: flex; align-items: baseline; justify-content: space-between; padding: 2.5rem 1.5rem 1.5rem; gap: 1rem; flex-wrap: wrap; }
+  .masthead { display: flex; align-items: baseline; justify-content: space-between; padding: 2.75rem 1.5rem 1.25rem; gap: 1rem; flex-wrap: wrap; }
   .name { text-decoration: none; }
-  h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.01em; margin: 0; line-height: 1; }
-  .where { margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+  h1 { font-weight: 700; font-size: clamp(2.2rem, 4.5vw, 3.4rem); letter-spacing: -0.035em; margin: 0; line-height: 0.95; font-variation-settings: 'opsz' 96; }
+  .where { margin: 0; color: var(--muted); }
+  .where time { margin-left: 0.6rem; color: var(--ink); }
 </style>

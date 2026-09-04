@@ -4,19 +4,19 @@
  "sources": {
   "cio": {
    "label": "Customer.io",
-   "ink": "#1f6f5f"
+   "ink": "#6b4df6"
   },
   "vidyard": {
    "label": "Vidyard",
-   "ink": "#5c4310"
+   "ink": "#14a37f"
   },
   "personal": {
    "label": "Personal",
-   "ink": "#b8432f"
+   "ink": "#f0a12e"
   },
   "ai": {
    "label": "AI-assisted",
-   "ink": "#2b2b2b"
+   "ink": "#101820"
   }
  },
  "days": {
