@@ -5,7 +5,7 @@ const { n, title, id } = Astro.props;
 <section class="sec wrap" id={id} aria-labelledby={`${id}-h`}>
   <div class="gutter label">{n}</div>
   <div class="body">
-    <h2 id={`${id}-h`} class="label">{title}</h2>
+    <h2 id={`${id}-h`} class="label" data-n={n}>{title}</h2>
     <slot />
   </div>
 </section>
@@ -17,5 +17,9 @@ const { n, title, id } = Astro.props;
   .body :global(p) { margin: 0 0 1rem; }
   .body :global(p:last-child) { margin-bottom: 0; }
   .body :global(ul) { padding: 0; margin: 0; list-style: none; }
-  @media (max-width: 40rem) { .sec { grid-template-columns: 1fr; gap: 0.5rem; } }
+  @media (max-width: 40rem) {
+    .sec { grid-template-columns: 1fr; gap: 0; padding: 2rem 1.5rem; }
+    .gutter { display: none; }
+    h2::before { content: attr(data-n) '\2003'; }
+  }
 </style>

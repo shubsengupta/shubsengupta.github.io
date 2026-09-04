@@ -79,3 +79,9 @@ test('column slices re-base x to zero and only include their weeks', () => {
   assert.equal((full.match(/class="day"/g) ?? []).length, 371);
   assert.match(half, /class="day" data-date="[^"]+"><rect class="bg" x="0"/);
 });
+
+test('a sliced strip labels its first column', () => {
+  const labels = monthLabels(2019, 27, 52);
+  assert.equal(labels[0].col, 0);
+  assert.equal(labels.filter((l) => l.col === 0).length, 1);
+});

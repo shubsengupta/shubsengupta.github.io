@@ -110,9 +110,14 @@ const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom 
     const svg = st.querySelector<SVGSVGElement>('.grid')!;
     svg.addEventListener('pointerover', (e) => {
       const g = (e.target as Element).closest<SVGElement>('[data-date]');
-      if (g && !pinned) show(g.dataset.date!);
+      if (!g) return;
+      out.classList.add('live');
+      if (!pinned) show(g.dataset.date!);
     });
-    svg.addEventListener('pointerleave', () => { if (pinned) show(pinned); });
+    svg.addEventListener('pointerleave', () => {
+      out.classList.toggle('live', pinned !== null);
+      if (pinned) show(pinned);
+    });
     svg.addEventListener('click', (e) => {
       const g = (e.target as Element).closest<SVGElement>('[data-date]');
       if (!g) return;
@@ -121,6 +126,7 @@ const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom 
       focused = pinned;
       clearFocus();
       if (pinned) markFocus(pinned);
+      out.classList.toggle('live', pinned !== null);
       show(date);
     });
     svg.addEventListener('keydown', (e) => {
@@ -189,7 +195,7 @@ const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom 
   .grid :global(.bg.future) { fill: transparent; }
   .grid :global(.baseline) { stroke: var(--ink); stroke-width: 1; opacity: 0.55; }
   .grid :global(.day rect) { transition: y 180ms ease, height 180ms ease; }
-  .grid :global(.day:hover .bg), .grid :global(.day.focus .bg) { fill: #d8d0c2; stroke: var(--ink); stroke-width: 1.5; }
+  .grid :global(.day:hover .bg), .grid :global(.day.focus .bg) { fill: #d8d0c2; stroke: #6f685c; stroke-width: 1; }
 
   @media (max-width: 40rem) {
     .strip-full { display: none; }
@@ -200,7 +206,8 @@ const widthOf = (c: { colFrom: number; colTo: number }) => (c.colTo - c.colFrom 
     .head { gap: 0.5rem 1rem; }
   }
 
-  .readout { margin: 1rem 0 0; min-height: 1.3em; font-size: 0.72rem; color: var(--ink); }
+  .readout { margin: 1rem 0 0; min-height: 1.3em; font-size: 0.72rem; color: var(--muted); }
+  .readout.live { color: var(--ink); font-weight: 500; }
   .statrow { display: flex; gap: 0.4rem 2rem; margin: 0.4rem 0 0; color: var(--muted); flex-wrap: wrap; font-size: 0.72rem; }
   .statrow div { display: flex; gap: 0.6rem; }
   .statrow dt::after { content: ':'; }

@@ -109,13 +109,18 @@ export function formatDate(date: string): string {
 export function monthLabels(year: number, colFrom = 0, colTo = 52): Array<{ col: number; label: string }> {
   const dates = yearGrid(year);
   const out: Array<{ col: number; label: string }> = [];
+  const lastLabelCol = colTo === 52 ? colTo : colTo - 2; // labels overhang their column; keep them inside a slice
   let last = '';
   dates.forEach((d, i) => {
     const m = d.slice(0, 7);
     const col = Math.floor(i / 7);
-    if (i % 7 === 0 && m !== last) {
-      const lastLabelCol = colTo === 52 ? colTo : colTo - 2; // labels overhang their column; keep them inside a slice
-      if (d.slice(8, 10) <= '07' && col >= colFrom && col <= lastLabelCol) out.push({ col: col - colFrom, label: MON[Number(d.slice(5, 7)) - 1] });
+    if (i % 7 !== 0 || col < colFrom || col > lastLabelCol) return;
+    const monthStartsHere = d.slice(8, 10) <= '07';
+    const sliceStartsHere = col === colFrom && colFrom > 0;
+    if (m !== last && (monthStartsHere || sliceStartsHere)) {
+      out.push({ col: col - colFrom, label: MON[Number(d.slice(5, 7)) - 1] });
+      last = m;
+    } else if (m !== last && monthStartsHere === false && col === colFrom) {
       last = m;
     }
   });
