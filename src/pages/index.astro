@@ -19,8 +19,8 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
   <Pulse data={data} />
 
   <Section n="01" title="Who" id="who">
-    <p>I'm an engineering manager at <a href="https://customer.io">Customer.io</a>, where I lead the team building Design Studio, the editor people use to make email, in-app and push content. Before that I spent a long stretch at Vidyard.</p>
-    <p>I live in Toronto. I write a lot of code for someone who manages people, most of it lately with an AI pair. The chart above is the honest record.</p>
+    <p>I'm an engineering manager at <a href="https://customer.io">Customer.io</a>. My team builds Design Studio, the editor people use to make email, in-app and push content. Before that I was at Vidyard.</p>
+    <p>I live in Toronto. I still write a lot of code for a manager, and most of it lately is paired with an AI. The chart above shows how much.</p>
     <ul class="mono links">
       <li><a href="https://github.com/shubsengupta">github.com/shubsengupta</a></li>
       <li><a href="https://www.linkedin.com/in/shubsengupta">linkedin.com/in/shubsengupta</a></li>
@@ -29,9 +29,9 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
   </Section>
 
   <Section n="02" title="What" id="what">
-    <h3 class="mono sub">Now</h3>
-    <p>Design Studio at Customer.io: a visual editor with an agent inside it that can fix your template, match your brand, and explain why a draft is unpublished. My job is to make the team that builds it fast, and the product that comes out of it boring to rely on.</p>
-    <h3 class="mono sub">Side projects</h3>
+    <h3 class="label sub">Now</h3>
+    <p>Design Studio at Customer.io: a visual editor with an agent inside it that fixes templates, matches your brand, and explains what is wrong with a draft. I run the team that builds it.</p>
+    <h3 class="label sub">Side projects</h3>
     <ul class="projects">
       {list.map((p) => (
         <li>
@@ -58,10 +58,10 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
 </Base>
 <style>
   .links li { margin: 0.2rem 0; }
-  .sub { margin: 1.25rem 0 0.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .sub { margin: 1.5rem 0 0.5rem; }
   .sub:first-child { margin-top: 0; }
-  .projects li, .posts li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.75rem; margin: 0.4rem 0; }
-  .year { color: var(--muted); padding-top: 0.25rem; }
+  .projects li, .posts li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.75rem; margin: 0.5rem 0; }
+  .year { color: var(--muted); padding-top: 0.3rem; }
   .blurb { color: var(--muted); }
   .empty { color: var(--muted); }
 </style>

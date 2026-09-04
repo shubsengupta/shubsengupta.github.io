@@ -52,7 +52,8 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
     const rects: string[] = [];
     rects.push(`<rect class="bg${future ? ' future' : ''}" x="${x}" y="${y0}" width="${o.cell}" height="${o.cell}"/>`);
     if (total > 0) {
-      const stackH = Math.max(1, Math.round((Math.min(total, max) / max) * o.cell));
+      const q = Math.ceil((4 * Math.min(total, max)) / max);
+      const stackH = Math.max(3, Math.round((q / 4) * o.cell));
       let yTop = y0 + o.cell;
       let used = 0;
       const visible = STACK.filter((k) => !hidden.has(k) && (day?.[k] ?? 0) > 0);
@@ -138,4 +139,19 @@ export function availableYears(data: PulseData): number[] {
 export function latestActive(data: PulseData): string {
   const keys = Object.keys(data.days).sort();
   return keys.at(-1) ?? todayISO();
+}
+
+export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey>): string {
+  const totals: Partial<Record<SourceKey, number>> = {};
+  let commits = 0;
+  for (const [d, day] of Object.entries(data.days)) {
+    if (!d.startsWith(String(year))) continue;
+    for (const k of STACK) {
+      if (hidden.has(k) || !day[k]) continue;
+      totals[k] = (totals[k] ?? 0) + day[k]!;
+      commits += day[k]!;
+    }
+  }
+  const labels = STACK.filter((k) => totals[k]).map((k) => data.sources[k].label);
+  return [String(year), `${commits.toLocaleString('en-CA')} commits`, ...labels].join(' · ');
 }

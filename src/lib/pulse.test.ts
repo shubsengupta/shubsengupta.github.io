@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, type PulseData } from './pulse.ts';
+import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, type PulseData } from './pulse.ts';
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z',
@@ -57,4 +57,15 @@ test('monthLabels gives one label per month in the grid', () => {
   const labels = monthLabels(2019);
   assert.equal(labels.length >= 12, true);
   assert.equal(labels.at(-1)!.label, 'Dec');
+});
+
+test('yearSummary lists commits and active sources', () => {
+  assert.equal(yearSummary(data, 2019, new Set()), '2019 · 6 commits · Vidyard');
+  assert.equal(yearSummary(data, 2026, new Set()), '2026 · 17 commits · Customer.io · Personal');
+});
+
+test('low counts still render a visible block', () => {
+  const svg = renderGrid(data, 2026, new Set(), { cell: 11, gap: 3 });
+  const m = svg.match(/data-date="2026-09-02"[^>]*>.*?data-source="cio"[^>]*height="(\d+)"/);
+  assert.ok(m && Number(m[1]) >= 3, 'expected a block of at least 3px');
 });

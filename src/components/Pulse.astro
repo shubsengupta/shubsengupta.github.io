@@ -46,7 +46,7 @@ const months = monthLabels(year);
 </section>
 
 <script>
-  import { renderGrid, readout, stats, monthLabels, type PulseData, type SourceKey } from '../lib/pulse';
+  import { renderGrid, readout, stats, monthLabels, yearSummary, type PulseData, type SourceKey } from '../lib/pulse';
   import data from '../data/pulse.json';
 
   const d = data as PulseData;
@@ -134,33 +134,40 @@ const months = monthLabels(year);
       pinned = null;
       focused = null;
       paint();
+      out.textContent = yearSummary(d, years[idx], hidden);
     });
   });
 </script>
 
 <style>
-  .pulse { padding: 0.5rem 1.5rem 2rem; }
+  .pulse { padding: 0.5rem 1.5rem 2.25rem; }
   .head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; color: var(--muted); }
-  .yearnav { display: inline-flex; align-items: center; gap: 0.5rem; font-variant-numeric: tabular-nums; }
-  .step { all: unset; cursor: pointer; padding: 0 0.35rem; color: var(--ink); font: inherit; }
-  .step:disabled { color: var(--rule); cursor: default; }
+  .yearnav { display: inline-flex; align-items: center; gap: 0.25rem; font-variant-numeric: tabular-nums; }
+  #pulse-year { font-size: 0.95rem; color: var(--ink); font-weight: 500; }
+  .step { all: unset; cursor: pointer; display: inline-grid; place-items: center; width: 2rem; height: 2rem; color: var(--ink); font: inherit; font-size: 1.1rem; }
+  .step:hover { background: #e9e2d6; }
+  .step:disabled { color: var(--rule); cursor: default; background: none; }
   .legend { display: inline-flex; gap: 1rem; flex-wrap: wrap; }
   .src { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font: inherit; color: var(--ink); }
   .src i { width: 0.6rem; height: 0.6rem; background: var(--ink); display: inline-block; }
+  .src[data-source="ai"] i { height: 2px; }
   .src[aria-pressed="false"] { color: var(--muted); }
   .src[aria-pressed="false"] i { background: transparent; box-shadow: inset 0 0 0 1px var(--rule); }
   .gridwrap { overflow-x: auto; }
-  .months { display: block; min-width: 40rem; margin-bottom: 2px; }
+  .months { display: block; margin-bottom: 2px; }
   .months :global(text) { font-size: 9px; fill: var(--muted); font-family: var(--mono); }
-  #pulse-svg { display: block; min-width: 40rem; outline: none; }
+  #pulse-svg { display: block; outline: none; }
+  @media (max-width: 40rem) {
+    .months :global(text) { font-size: 15px; }
+    .months :global(text:nth-child(even)) { display: none; }
+  }
   #pulse-svg:focus-visible { outline: 1px solid var(--ink); outline-offset: 6px; }
   #pulse-svg :global(.bg) { fill: #e9e2d6; }
   #pulse-svg :global(.bg.future) { fill: transparent; }
   #pulse-svg :global(.day rect) { transition: y 180ms ease, height 180ms ease; }
-  #pulse-svg :global(.day:hover .bg), #pulse-svg :global(.day.focus .bg) { fill: #d8d0c2; }
-  #pulse-svg :global(.day.focus) { outline: 1px solid var(--ink); }
-  .readout { margin: 0.9rem 0 0; min-height: 1.3em; }
-  .statrow { display: flex; gap: 2.5rem; margin: 0.75rem 0 0; color: var(--muted); flex-wrap: wrap; }
+  #pulse-svg :global(.day:hover .bg), #pulse-svg :global(.day.focus .bg) { fill: #d8d0c2; stroke: var(--ink); stroke-width: 1.5; }
+  .readout { margin: 1rem 0 0; min-height: 1.3em; font-size: 0.72rem; color: var(--ink); }
+  .statrow { display: flex; gap: 0.4rem 2rem; margin: 0.4rem 0 0; color: var(--muted); flex-wrap: wrap; font-size: 0.72rem; }
   .statrow div { display: flex; gap: 0.6rem; }
   .statrow dt::after { content: ':'; }
   .statrow dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
