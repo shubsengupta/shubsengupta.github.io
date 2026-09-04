@@ -37,9 +37,12 @@ test('agent signals: stats and stacked agent layer', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#st-prs')).not.toHaveText('0');
   await expect(page.locator('#st-agent')).toContainText('%');
+  await expect(page.locator('#st-chats')).not.toHaveText('0');
+  await expect(page.locator('#st-tokens')).toContainText(/[kMB]$/);
   await expect(page.locator('#pulse-svg [data-source="agent"]').first()).toBeAttached();
   await page.locator('#pulse-svg .day:has([data-source="agent"])').last().hover();
-  await expect(page.locator('#pulse-tip')).toContainText(/built with (Fable|Opus|Sonnet|Claude)/);
+  await expect(page.locator('#pulse-tip')).toContainText(/Claude chats? on (Fable|Opus|Sonnet|Haiku)/);
+  await expect(page.locator('#pulse-tip')).toContainText('tokens');
   await page.locator('.src[data-source="agent"]').click();
   await expect(page.locator('#pulse-svg [data-source="agent"]')).toHaveCount(0);
 });

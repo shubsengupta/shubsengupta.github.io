@@ -1,10 +1,11 @@
 ---
-interface Props { refreshed: string }
-const { refreshed } = Astro.props;
+interface Props { refreshed: string; claudeRefreshed?: string }
+const { refreshed, claudeRefreshed } = Astro.props;
 const date = refreshed.slice(0, 10);
+const claudeDate = claudeRefreshed?.slice(0, 10);
 ---
 <footer class="wrap mono">
-  <p>Pulse data from GitHub, refreshed {date}. <a href="https://github.com/shubsengupta/shubsengupta.github.io">Source</a>.</p>
+  <p>GitHub data refreshed {date}.{claudeDate && ` Claude Code stats refreshed ${claudeDate}, counts only.`} <a href="https://github.com/shubsengupta/shubsengupta.github.io">Source</a>.</p>
 </footer>
 <style>
   footer p { color: var(--muted); padding: 1.5rem 0 3rem; margin: 0; border-top: 1px solid var(--line); }

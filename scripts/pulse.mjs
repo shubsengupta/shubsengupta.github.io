@@ -15,7 +15,7 @@ const SOURCES = {
   cio: { label: 'Customer.io', ink: '#00262b' },
   vidyard: { label: 'Vidyard', ink: '#3bcb85' },
   personal: { label: 'Personal', ink: '#3b6fe0' },
-  agent: { label: 'Built with Claude', ink: '#d97757' },
+  agent: { label: 'Claude chats', ink: '#d97757' },
 };
 
 const { values: args } = parseArgs({ options: {
@@ -88,7 +88,7 @@ async function main() {
       cio: cio[day]?.count ?? 0,
       personal: personal[day]?.count ?? 0,
       prs: prs[day]?.count ?? 0,
-      agent: prs[day]?.agent ?? 0,
+      agentPrs: prs[day]?.agent ?? 0,
       model: topModel(models[day]) ?? '',
     };
   }

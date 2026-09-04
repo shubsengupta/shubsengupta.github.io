@@ -5,13 +5,14 @@ import Pulse from '../components/Pulse.astro';
 import Section from '../components/Section.astro';
 import Footer from '../components/Footer.astro';
 import pulse from '../data/pulse.json';
+import claude from '../data/claude.json';
 import projects from '../data/projects.yaml';
 import { getCollection } from 'astro:content';
-import type { PulseData } from '../lib/pulse';
+import { mergeClaude, type PulseData, type ClaudeData } from '../lib/pulse';
 import cioMark from '../assets/brand/customerio.svg?raw';
 
 type Project = { name: string; year: number; url: string; blurb: string };
-const data = pulse as PulseData;
+const data = mergeClaude(pulse as PulseData, claude as ClaudeData);
 const list = projects as Project[];
 const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
@@ -21,7 +22,7 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
 
   <Section title="Who I am" id="who">
     <p>I'm an engineering manager at <a href="https://customer.io" class="brand"><span class="mark cio" set:html={cioMark} />Customer.io</a>. My team builds Design Studio, the editor people use to make email, in-app and push content. Before that I was at <a href="https://www.vidyard.com" class="brand"><span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="16" height="16" /></span>Vidyard</a>.</p>
-    <p>I live in Toronto. I still ship a lot of code for a manager, and most of it lately is built with Claude Code. The chart above keeps score.</p>
+    <p>I live in Toronto. I still ship a lot of code for a manager, most of it in long conversations with Claude Code. The chart above keeps score.</p>
     <ul class="links">
       <li><a href="https://github.com/shubsengupta">GitHub</a></li>
       <li><a href="https://www.linkedin.com/in/shubsengupta">LinkedIn</a></li>
@@ -59,7 +60,7 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
     </Section>
   )}
 
-  <Footer refreshed={data.generatedAt} />
+  <Footer refreshed={data.generatedAt} claudeRefreshed={data.claudeGeneratedAt} />
 </Base>
 <style>
   .links { display: flex; gap: 1.25rem; flex-wrap: wrap; }

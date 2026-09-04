@@ -1,5 +1,5 @@
 ---
-import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, type PulseData, type SourceKey } from '../lib/pulse';
+import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, fmtTokens, type PulseData, type SourceKey } from '../lib/pulse';
 import cioMark from '../assets/brand/customerio.svg?raw';
 import claudeMark from '../assets/brand/claude.svg?raw';
 interface Props { data: PulseData }
@@ -72,10 +72,10 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   <p class="mono readout" id="pulse-readout" aria-live="polite">{readout(data, initialDate)}</p>
 
   <dl class="stats">
-    <div><dd id="st-prs">{s.prs}</dd><dt>PRs opened</dt></div>
-    <div><dd id="st-agent">{s.agentShare}%</dd><dt>built with Claude</dt></div>
-    <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed</dt></div>
-    <div><dd id="st-contrib">{s.contributions.toLocaleString('en-CA')}</dd><dt>contributions</dt></div>
+    <div class="claude"><dd id="st-chats">{s.chats.toLocaleString('en-CA')}</dd><dt>Claude Code chats</dt></div>
+    <div class="claude"><dd id="st-tokens">{fmtTokens(s.tokens)}</dd><dt>tokens from Claude</dt></div>
+    <div><dd id="st-prs">{s.prs}</dd><dt><span id="st-agent">{s.agentShare}%</span> of PRs built with Claude</dt></div>
+    <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed for others</dt></div>
   </dl>
 
   <div class="career" role="group" aria-label="Pick a year">
@@ -91,14 +91,15 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Pull requests built with Claude Code stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard and personal. Claude Code chats stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
 </section>
 
 <script>
-  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, type PulseData, type SourceKey } from '../lib/pulse';
-  import data from '../data/pulse.json';
+  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, mergeClaude, fmtTokens, type PulseData, type ClaudeData, type SourceKey } from '../lib/pulse';
+  import pulse from '../data/pulse.json';
+  import claude from '../data/claude.json';
 
-  const d = data as PulseData;
+  const d = mergeClaude(pulse as PulseData, claude as ClaudeData);
   const root = document.querySelector<HTMLElement>('.pulse')!;
   const out = document.getElementById('pulse-readout')!;
   const tip = document.getElementById('pulse-tip')!;
@@ -150,10 +151,11 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     });
     root.querySelectorAll<HTMLButtonElement>('.yr').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.year) === year)));
     const s = stats(d, year, hidden);
+    document.getElementById('st-chats')!.textContent = s.chats.toLocaleString('en-CA');
+    document.getElementById('st-tokens')!.textContent = fmtTokens(s.tokens);
     document.getElementById('st-prs')!.textContent = String(s.prs);
     document.getElementById('st-agent')!.textContent = `${s.agentShare}%`;
     document.getElementById('st-reviews')!.textContent = String(s.reviews);
-    document.getElementById('st-contrib')!.textContent = s.contributions.toLocaleString('en-CA');
     if (focused) markFocus(focused);
   }
 
@@ -287,7 +289,8 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .stats div { background: var(--surface); border-radius: var(--r-l); padding: 0.9rem 1rem 0.8rem; }
   .stats dd { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
   .stats dt { margin-top: 0.35rem; color: var(--muted); font-size: 0.82rem; }
-  .stats div:nth-child(2) dd { color: var(--agent); }
+  .stats div.claude dd { color: var(--agent); }
+  .stats dt span { color: var(--ink); font-weight: 600; }
 
   .career { display: flex; gap: 0.35rem; align-items: flex-end; margin-top: 1.5rem; overflow-x: auto; }
   .yr { all: unset; cursor: pointer; flex: 1 1 0; min-width: 1.6rem; display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; padding: 0.25rem 0.15rem; border-radius: var(--r-m); transition: background 150ms ease; }
