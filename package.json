@@ -9,8 +9,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "pulse": "node scripts/pulse.mjs",
-    "test": "node --test scripts/ && npm run test:unit",
-    "test:unit": "node --experimental-strip-types --test src/lib/",
+    "test": "node --test 'scripts/**/*.test.mjs' && npm run test:unit",
+    "test:unit": "node --experimental-strip-types --test 'src/lib/*.test.ts'",
     "test:e2e": "playwright test"
   },
   "dependencies": {
