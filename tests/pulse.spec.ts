@@ -8,7 +8,7 @@ test('pulse renders and responds', async ({ page }) => {
   const date = (await active.getAttribute('data-date'))!;
   await active.hover();
   const dayNum = String(new Date(date + 'T00:00:00Z').getUTCDate());
-  await expect(page.locator('#pulse-readout')).toContainText(` ${dayNum} ·`);
+  await expect(page.locator('#pulse-tip')).toContainText(` ${dayNum}`);
 
   await page.locator('.src[data-source="cio"]').click();
   await expect(page.locator('#pulse-svg [data-source="cio"]')).toHaveCount(0);
@@ -25,7 +25,6 @@ test('career strip picks a year and tooltip follows hover', async ({ page }) => 
   await page.goto('/');
   await page.locator('.yr[data-year="2019"]').click();
   await expect(page.locator('#pulse-year')).toHaveText('2019');
-  await expect(page.locator('#pulse-readout')).toContainText('2019');
   await expect(page.locator('#pulse-svg [data-source="vidyard"]').first()).toBeAttached();
   const active = page.locator('#pulse-svg .day:has([data-source])').last();
   await active.hover();
@@ -33,15 +32,12 @@ test('career strip picks a year and tooltip follows hover', async ({ page }) => 
   await expect(page.locator('#pulse-tip')).toContainText('Vidyard');
 });
 
-test('agent signals: stats and stacked agent layer', async ({ page }) => {
+test('agent layer: stacked sessions with tooltip', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('#st-commits')).not.toHaveText('0');
-  await expect(page.locator('#st-agent')).toContainText('%');
-  await expect(page.locator('#st-sessions')).not.toHaveText('0');
-  await expect(page.locator('#st-tokens')).toContainText(/[kMB]$/);
   await expect(page.locator('#pulse-svg [data-source="agent"]').first()).toBeAttached();
   await page.locator('#pulse-svg .day:has([data-source="agent"])').last().hover();
-  await expect(page.locator('#pulse-tip')).toContainText(/Claude sessions? on (Fable|Opus|Sonnet|Haiku)/);
+  await expect(page.locator('#pulse-tip')).toContainText(/Claude sessions?/);
+  await expect(page.locator('#pulse-tip')).not.toContainText(/Fable|Opus|Sonnet|Haiku/);
   await expect(page.locator('#pulse-tip')).toContainText('tokens');
   await page.locator('.src[data-source="agent"]').click();
   await expect(page.locator('#pulse-svg [data-source="agent"]')).toHaveCount(0);

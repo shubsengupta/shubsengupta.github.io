@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { commitsOf, yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, modelFamily, agentInk, mergeClaude, fmtTokens, eraOfYear, eraSpans, ERA_BOUNDS, type PulseData } from './pulse.ts';
+import { commitsOf, yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, mergeClaude, fmtTokens, eraOfYear, eraSpans, ERA_BOUNDS, type PulseData } from './pulse.ts';
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z',
@@ -29,11 +29,11 @@ test('yearGrid gives 371 dates covering Dec 31 for a past year, starting on a Su
   assert.equal(new Date(g[0] + 'T00:00:00Z').getUTCDay(), 0);
 });
 
-test('renderGrid stacks employer, personal and agent layers, agent tinted by model', () => {
+test('renderGrid stacks employer, personal and agent layers', () => {
   const svg = renderGrid(data, 2026, new Set(), { cell: 10, gap: 2 });
   assert.equal((svg.match(/class="day"/g) ?? []).length, 371);
   assert.match(svg, /data-date="2026-09-01"[^>]*>[\s\S]*?data-source="cio"[\s\S]*?data-source="personal"[\s\S]*?data-source="agent"[^>]*fill="#d97757"/);
-  assert.match(svg, /data-date="2026-09-03"[^>]*>[\s\S]*?data-source="agent"[^>]*fill="#e5977c"/);
+  assert.match(svg, /data-date="2026-09-03"[^>]*>[\s\S]*?data-source="agent"[^>]*fill="#d97757"/);
   assert.match(svg, /class="baseline"/);
   assert.doesNotMatch(svg, /class="ai"/);
 });
@@ -49,8 +49,8 @@ test('hidden sources are not rendered', () => {
   assert.doesNotMatch(renderGrid(data, 2026, new Set(['agent']), { cell: 10, gap: 2 }), /data-source="agent"/);
 });
 
-test('readout names the model', () => {
-  assert.equal(readout(data, '2026-09-01'), 'Tue Sep 1 · 14 Customer.io · 2 personal · 6 commits (4 with Claude) · 2 Claude sessions on Fable 5.1 · 1.5M tokens');
+test('readout formats a day', () => {
+  assert.equal(readout(data, '2026-09-01'), 'Tue Sep 1 · 14 Customer.io · 2 personal · 6 commits (4 with Claude) · 2 Claude sessions · 1.5M tokens');
   assert.equal(readout(data, '2026-09-04'), 'Fri Sep 4 · quiet');
 });
 
@@ -114,16 +114,9 @@ test('yearTotals covers every year from first data to now, oldest first', () => 
 test('dayRows lists the sources present on a day with the model named', () => {
   assert.deepEqual(dayRows(data, '2026-09-02').map((r) => r.key), ['cio']);
   assert.deepEqual(dayRows(data, '2026-09-01').map((r) => [r.key, r.n, r.label]), [
-    ['cio', 14, 'Customer.io'], ['personal', 2, 'Personal'], ['commits', 6, 'commits, 4 with Claude'], ['agent', 2, 'Claude sessions on Fable 5.1'], ['tokens', '1.5M', 'tokens from Claude'],
+    ['cio', 14, 'Customer.io'], ['personal', 2, 'Personal'], ['commits', 6, 'commits, 4 with Claude'], ['agent', 2, 'Claude sessions'], ['tokens', '1.5M', 'tokens from Claude'],
   ]);
   assert.deepEqual(dayRows(data, '2026-09-04'), []);
-});
-
-test('model families map to inks', () => {
-  assert.equal(modelFamily('Opus 4.8'), 'opus');
-  assert.equal(modelFamily('Fable 5.1'), 'fable');
-  assert.equal(modelFamily(undefined), 'other');
-  assert.equal(agentInk({ agent: 1, model: 'Sonnet 5' }), '#eeb59f');
 });
 
 test('mergeClaude lays sessions, tokens and model over the GitHub days', () => {

@@ -12,8 +12,6 @@ const GUTTER = 22;
 const years = availableYears(data);
 const year = years[0];
 const hidden = new Set<SourceKey>();
-const initialDate = latestActive(data);
-const s = stats(data, year, hidden);
 const legend: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal', 'agent'];
 const totals = yearTotals(data);
 const maxYear = Math.max(...totals.map((t) => t.total), 1);
@@ -73,15 +71,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
 
   <div class="tip mono" id="pulse-tip" hidden role="status"></div>
 
-  <p class="mono readout" id="pulse-readout" aria-live="polite">{readout(data, initialDate)}</p>
-
-  <dl class="stats">
-    <div class="claude"><dd id="st-sessions">{s.sessions.toLocaleString('en-CA')}</dd><dt>Claude Code sessions</dt></div>
-    <div class="claude"><dd id="st-tokens">{fmtTokens(s.tokens)}</dd><dt>tokens from Claude</dt></div>
-    <div><dd id="st-commits">{s.commits.toLocaleString('en-CA')}</dd><dt>commits, <span id="st-agent">{s.aiShare}%</span> with Claude</dt></div>
-    <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed for others</dt></div>
-  </dl>
-
   <p class="mono careerlabel">By year and employer. Click a year to see it above.</p>
   <div class="eras" style={`--cols:${totals.length}`} role="list" aria-label="Employers by year">
     {eras.map((e) => (
@@ -110,17 +99,16 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard, Vidhub, and personal projects. Claude Code sessions stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year; labels above it mark which years were spent at Vidhub, Vidyard and Customer.io.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard, Vidhub, and personal projects. Claude Code sessions stack on top of each day in Claude's colour. Use arrow keys to move between days. The row of yearly bars picks a year; labels above it mark which years were spent at Vidhub, Vidyard and Customer.io.</p>
 </section>
 
 <script>
-  import { renderGrid, readout, stats, monthLabels, yearSummary, dayRows, formatDate, mergeClaude, fmtTokens, type PulseData, type ClaudeData, type SourceKey } from '../lib/pulse';
+  import { renderGrid, monthLabels, dayRows, formatDate, mergeClaude, type PulseData, type ClaudeData, type SourceKey } from '../lib/pulse';
   import pulse from '../data/pulse.json';
   import claude from '../data/claude.json';
 
   const d = mergeClaude(pulse as PulseData, claude as ClaudeData);
   const root = document.querySelector<HTMLElement>('.pulse')!;
-  const out = document.getElementById('pulse-readout')!;
   const tip = document.getElementById('pulse-tip')!;
   const yearEl = document.getElementById('pulse-year')!;
   const years = root.dataset.years!.split(',').map(Number);
@@ -136,7 +124,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
 
   const clearFocus = () => root.querySelectorAll('.focus').forEach((el) => el.classList.remove('focus'));
   const markFocus = (date: string) => root.querySelectorAll(`.day[data-date="${date}"]`).forEach((el) => el.classList.add('focus'));
-  const show = (date: string) => { out.textContent = readout(d, date); };
 
   function placeTip(date: string, anchor: Element) {
     const rows = dayRows(d, date);
@@ -169,12 +156,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
       b.disabled = n < 0 || n >= years.length;
     });
     root.querySelectorAll<HTMLButtonElement>('.yr').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.year) === year)));
-    const s = stats(d, year, hidden);
-    document.getElementById('st-sessions')!.textContent = s.sessions.toLocaleString('en-CA');
-    document.getElementById('st-tokens')!.textContent = fmtTokens(s.tokens);
-    document.getElementById('st-commits')!.textContent = s.commits.toLocaleString('en-CA');
-    document.getElementById('st-agent')!.textContent = `${s.aiShare}%`;
-    document.getElementById('st-reviews')!.textContent = String(s.reviews);
     if (focused) markFocus(focused);
   }
 
@@ -186,7 +167,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     focused = null;
     tip.hidden = true;
     paint();
-    out.textContent = yearSummary(d, year, hidden);
   }
 
   for (const st of strips) {
@@ -194,14 +174,9 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     svg.addEventListener('pointerover', (e) => {
       const g = (e.target as Element).closest<SVGElement>('[data-date]');
       if (!g) return;
-      out.classList.add('live');
-      if (!pinned) { show(g.dataset.date!); placeTip(g.dataset.date!, g); }
+      if (!pinned) placeTip(g.dataset.date!, g);
     });
-    svg.addEventListener('pointerleave', () => {
-      out.classList.toggle('live', pinned !== null);
-      if (pinned) show(pinned);
-      hideTip();
-    });
+    svg.addEventListener('pointerleave', hideTip);
     svg.addEventListener('click', (e) => {
       const g = (e.target as Element).closest<SVGElement>('[data-date]');
       if (!g) return;
@@ -210,8 +185,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
       focused = pinned;
       clearFocus();
       if (pinned) { markFocus(pinned); placeTip(pinned, g); } else { tip.hidden = true; }
-      out.classList.toggle('live', pinned !== null);
-      show(date);
     });
     svg.addEventListener('keydown', (e) => {
       const days = [...svg.querySelectorAll<SVGGElement>('.day')];
@@ -224,11 +197,9 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
         focused = days[i].dataset.date!;
         clearFocus();
         markFocus(focused);
-        show(focused);
         placeTip(focused, days[i]);
       } else if (e.key === 'Enter' && focused) {
         pinned = focused;
-        show(focused);
       } else if (e.key === 'Escape') {
         pinned = null;
         focused = null;
@@ -302,16 +273,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .tip :global(i) { width: 0.5rem; height: 0.5rem; border-radius: 2px; display: inline-block; }
   .tip :global(.quiet) { color: var(--faint); }
 
-  .readout { margin: 1rem 0 0; min-height: 1.3em; color: var(--muted); transition: color 150ms ease; }
-  .readout.live { color: var(--ink); font-weight: 500; }
-
-  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin: 1.25rem 0 0; }
-  .stats div { background: var(--surface); border-radius: var(--r-l); padding: 0.9rem 1rem 0.8rem; }
-  .stats dd { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-  .stats dt { margin-top: 0.35rem; color: var(--muted); font-size: 0.82rem; }
-  .stats div.claude dd { color: var(--agent); }
-  .stats dt span { color: var(--ink); font-weight: 600; }
-
   .careerlabel { margin: 1.5rem 0 0.4rem; color: var(--faint); font-size: 0.68rem; }
   .eras, .career { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 0.35rem; }
   .eras { margin-bottom: 0.45rem; }
@@ -351,7 +312,6 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     .grid :global(.dow) { font-size: 10px; }
     .legend { gap: 0.3rem; }
     .src { font-size: 0.76rem; padding: 0.2rem 0.6rem 0.2rem 0.3rem; }
-    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .yr { min-width: 0; padding: 0.2rem 0.05rem; overflow: visible; }
     .lbl { font-size: 0.55rem; }
     .lbl.alt { visibility: hidden; }
@@ -366,7 +326,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   @media (prefers-reduced-motion: reduce) {
-    .grid :global(.day rect), .src, .readout, .yr { transition: none; }
+    .grid :global(.day rect), .src, .yr { transition: none; }
     .grid.enter :global(rect[data-source]) { animation: none; }
   }
 </style>

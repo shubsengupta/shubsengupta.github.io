@@ -15,7 +15,7 @@ export type PulseData = {
 };
 
 // Claude Code activity comes from a separate local export. Sessions become the
-// agent layer; the model seen in the logs beats the one guessed from commits.
+// agent layer.
 export function mergeClaude(pulse: PulseData, claude: ClaudeData | null): PulseData {
   if (!claude) return pulse;
   const days: Record<string, Day> = { ...pulse.days };
@@ -45,30 +45,7 @@ const DAY_MS = 86400000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const todayISO = () => iso(Date.now());
 
-export type ModelFamily = 'fable' | 'opus' | 'sonnet' | 'haiku' | 'other';
-
-export function modelFamily(name: string | undefined): ModelFamily {
-  const n = (name ?? '').toLowerCase();
-  if (n.includes('fable') || n.includes('mythos')) return 'fable';
-  if (n.includes('opus')) return 'opus';
-  if (n.includes('sonnet')) return 'sonnet';
-  if (n.includes('haiku')) return 'haiku';
-  return 'other';
-}
-
-// Claude's terracotta, stepped lighter for smaller models so the bars carry
-// the model story without a separate band.
-export const MODEL_INKS: Record<ModelFamily, string> = {
-  fable: '#d97757',
-  opus: '#e5977c',
-  sonnet: '#eeb59f',
-  haiku: '#f5d2c3',
-  other: '#d97757',
-};
-
-export function agentInk(day: Day | undefined): string {
-  return MODEL_INKS[modelFamily(day?.model)];
-}
+export const agentInk = (data: PulseData): string => data.sources.agent.ink;
 
 export function stackTotal(day: Day | undefined, hidden: Set<SourceKey>): number {
   if (!day) return 0;
@@ -131,7 +108,7 @@ export function renderGrid(data: PulseData, year: number, hidden: Set<SourceKey>
         if (hh === 0) return;
         used += hh;
         yTop -= hh;
-        const ink = k === 'agent' ? agentInk(day) : data.sources[k].ink;
+        const ink = data.sources[k].ink;
         rects.push(`<rect data-source="${k}" x="${x}" y="${yTop}" width="${o.cell}" height="${hh}" rx="${idx === visible.length - 1 ? 2 : 0}" fill="${ink}"/>`);
       });
     }
@@ -185,7 +162,7 @@ export function readout(data: PulseData, date: string): string {
   if (day?.indie) bits.push(`${day.indie} ${data.sources.indie.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
   if (commitsOf(day)) bits.push(`${commitsOf(day)} commit${commitsOf(day) === 1 ? '' : 's'}${day?.aiCommits ? ` (${day.aiCommits} with Claude)` : ''}`);
-  if (day?.agent) bits.push(`${day.agent} Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`);
+  if (day?.agent) bits.push(`${day.agent} Claude session${day.agent === 1 ? '' : 's'}`);
   if (day?.tokens) bits.push(`${fmtTokens(day.tokens)} tokens`);
   return [formatDate(date), ...(bits.length ? bits : ['quiet'])].join(' · ');
 }
@@ -198,7 +175,7 @@ export function dayRows(data: PulseData, date: string): DayRow[] {
   const rows: DayRow[] = [];
   for (const k of WORK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
   if (commitsOf(day)) rows.push({ key: 'commits', label: `commit${commitsOf(day) === 1 ? '' : 's'}${day.aiCommits ? `, ${day.aiCommits} with Claude` : ''}`, ink: null, n: commitsOf(day) });
-  if (day.agent) rows.push({ key: 'agent', label: `Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`, ink: agentInk(day), n: day.agent });
+  if (day.agent) rows.push({ key: 'agent', label: `Claude session${day.agent === 1 ? '' : 's'}`, ink: data.sources.agent.ink, n: day.agent });
   if (day.tokens) rows.push({ key: 'tokens', label: 'tokens from Claude', ink: null, n: fmtTokens(day.tokens) });
   return rows;
 }
