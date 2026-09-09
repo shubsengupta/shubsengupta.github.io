@@ -1,6 +1,6 @@
 export type SourceKey = 'cio' | 'vidyard' | 'indie' | 'personal' | 'agent';
 export type Day = Partial<Record<SourceKey | 'prs' | 'agentPrs' | 'tokens' | 'turns', number>> & { model?: string };
-export type ClaudeData = { generatedAt: string; days: Record<string, { chats?: number; turns?: number; outputTokens?: number; model?: string }> };
+export type ClaudeData = { generatedAt: string; days: Record<string, { sessions?: number; turns?: number; outputTokens?: number; model?: string }> };
 export type PulseData = {
   generatedAt: string;
   cutover: string;
@@ -10,7 +10,7 @@ export type PulseData = {
   claudeGeneratedAt?: string;
 };
 
-// Claude Code activity comes from a separate local export. Chats become the
+// Claude Code activity comes from a separate local export. Sessions become the
 // agent layer; the model seen in the logs beats the one guessed from commits.
 export function mergeClaude(pulse: PulseData, claude: ClaudeData | null): PulseData {
   if (!claude) return pulse;
@@ -18,7 +18,7 @@ export function mergeClaude(pulse: PulseData, claude: ClaudeData | null): PulseD
   for (const [d, c] of Object.entries(claude.days)) {
     const prev = days[d] ?? {};
     const next: Day = { ...prev };
-    if (c.chats) next.agent = c.chats;
+    if (c.sessions) next.agent = c.sessions;
     if (c.turns) next.turns = c.turns;
     if (c.outputTokens) next.tokens = c.outputTokens;
     if (c.model) next.model = c.model;
@@ -34,7 +34,7 @@ export function fmtTokens(n: number): string {
   return String(n);
 }
 
-// Bottom to top: employer, personal, then Claude Code chats on top.
+// Bottom to top: employer, personal, then Claude Code sessions on top.
 const STACK: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal', 'agent'];
 const WORK: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal'];
 const DAY_MS = 86400000;
@@ -181,7 +181,7 @@ export function readout(data: PulseData, date: string): string {
   if (day?.indie) bits.push(`${day.indie} ${data.sources.indie.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
   if (day?.prs) bits.push(`${day.prs} PR${day.prs === 1 ? '' : 's'}`);
-  if (day?.agent) bits.push(`${day.agent} Claude chat${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`);
+  if (day?.agent) bits.push(`${day.agent} Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`);
   if (day?.tokens) bits.push(`${fmtTokens(day.tokens)} tokens`);
   return [formatDate(date), ...(bits.length ? bits : ['quiet'])].join(' · ');
 }
@@ -194,7 +194,7 @@ export function dayRows(data: PulseData, date: string): DayRow[] {
   const rows: DayRow[] = [];
   for (const k of WORK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
   if (day.prs) rows.push({ key: 'prs', label: day.prs === 1 ? 'PR opened' : 'PRs opened', ink: null, n: day.prs });
-  if (day.agent) rows.push({ key: 'agent', label: `Claude chat${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`, ink: agentInk(day), n: day.agent });
+  if (day.agent) rows.push({ key: 'agent', label: `Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`, ink: agentInk(day), n: day.agent });
   if (day.tokens) rows.push({ key: 'tokens', label: 'tokens from Claude', ink: null, n: fmtTokens(day.tokens) });
   return rows;
 }
@@ -207,7 +207,7 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
   let contributions = 0;
   let prs = 0;
   let agentPrs = 0;
-  let chats = 0;
+  let sessions = 0;
   let tokens = 0;
   for (const d of dates) {
     const day = data.days[d];
@@ -215,7 +215,7 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
     contributions += t;
     prs += day?.prs ?? 0;
     agentPrs += day?.agentPrs ?? 0;
-    chats += day?.agent ?? 0;
+    sessions += day?.agent ?? 0;
     tokens += day?.tokens ?? 0;
     if (t > (busiest?.total ?? 0)) busiest = { date: d, total: t };
   }
@@ -227,7 +227,7 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
     else break;
   }
   const reviews = data.years?.[String(year)]?.reviews ?? 0;
-  return { streak, busiest, contributions, prs, agentPrs, agentShare: prs ? Math.round((agentPrs / prs) * 100) : 0, chats, tokens, reviews };
+  return { streak, busiest, contributions, prs, agentPrs, agentShare: prs ? Math.round((agentPrs / prs) * 100) : 0, sessions, tokens, reviews };
 }
 
 export function availableYears(data: PulseData): number[] {
@@ -252,7 +252,7 @@ export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey
   const labels = WORK.filter((k) => totals[k]).map((k) => data.sources[k].label);
   const bits = [String(year), `${s.contributions.toLocaleString('en-CA')} contributions`, ...labels];
   if (s.prs) bits.push(`${s.prs} PRs`);
-  if (s.chats) bits.push(`${s.chats} Claude chats`);
+  if (s.sessions) bits.push(`${s.sessions} Claude sessions`);
   if (s.tokens) bits.push(`${fmtTokens(s.tokens)} tokens`);
   return bits.join(' · ');
 }

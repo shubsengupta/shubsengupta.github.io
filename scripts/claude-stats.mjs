@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Exports Claude Code activity as counts only: chats, turns, tokens and the
+// Exports Claude Code activity as counts only: sessions, turns, tokens and the
 // top model per day. Nothing from the conversations themselves is read out.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';

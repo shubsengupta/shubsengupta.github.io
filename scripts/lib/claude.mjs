@@ -57,24 +57,24 @@ export function finalizeDays(raw) {
   for (const [d, v] of Object.entries(raw)) {
     const top = Object.entries(v.byModel).sort((a, b) => b[1] - a[1])[0]?.[0];
     const rec = {
-      chats: v.sessions instanceof Set ? v.sessions.size : v.sessions ?? 0,
+      sessions: v.sessions instanceof Set ? v.sessions.size : v.sessions ?? 0,
       turns: v.turns,
       inputTokens: v.inputTokens,
       outputTokens: v.outputTokens,
       cacheRead: v.cacheRead,
     };
     if (top) rec.model = prettyModel(top);
-    if (rec.chats || rec.turns || rec.outputTokens) out[d] = rec;
+    if (rec.sessions || rec.turns || rec.outputTokens) out[d] = rec;
   }
   return out;
 }
 
 // stats-cache.json has sessionCount/messageCount per day back further than the
-// logs survive. It has no token detail we trust, so only chats/turns come from it.
+// logs survive. It has no token detail we trust, so only sessions/turns come from it.
 export function readStatsCache(json) {
   const out = {};
   for (const a of json?.dailyActivity ?? []) {
-    if (a.sessionCount || a.messageCount) out[a.date] = { chats: a.sessionCount ?? 0, turns: a.messageCount ?? 0 };
+    if (a.sessionCount || a.messageCount) out[a.date] = { sessions: a.sessionCount ?? 0, turns: a.messageCount ?? 0 };
   }
   return out;
 }
