@@ -1,7 +1,8 @@
 ---
-import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, fmtTokens, type PulseData, type SourceKey } from '../lib/pulse';
+import { renderGrid, gridHeight, readout, stats, availableYears, latestActive, monthLabels, yearTotals, eraSpans, fmtTokens, type PulseData, type SourceKey } from '../lib/pulse';
 import cioMark from '../assets/brand/customerio.svg?raw';
 import claudeMark from '../assets/brand/claude.svg?raw';
+import vidhubMark from '../assets/brand/vidhub.svg?raw';
 interface Props { data: PulseData }
 const { data } = Astro.props;
 const CELL = 11;
@@ -16,6 +17,8 @@ const s = stats(data, year, hidden);
 const legend: SourceKey[] = ['cio', 'vidyard', 'indie', 'personal', 'agent'];
 const totals = yearTotals(data);
 const maxYear = Math.max(...totals.map((t) => t.total), 1);
+const eras = eraSpans(totals.map((t) => t.year));
+const eraTitle = (e: { from: number; to: number }) => (e.from === e.to ? String(e.from) : `${e.from} to ${e.to}`);
 
 // One full strip for wide screens, two half-year strips stacked for phones.
 const strips = [
@@ -41,7 +44,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
         <button class="src" data-source={k} aria-pressed="true" style={`--ink:${data.sources[k].ink}`}>
           {k === 'cio' && <span class="mark cio" set:html={cioMark} />}
           {k === 'vidyard' && <span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="14" height="14" /></span>}
-          {k === 'indie' && <span class="mark indie"><i></i></span>}
+          {k === 'indie' && <span class="mark indie" set:html={vidhubMark} />}
           {k === 'personal' && <span class="mark personal"><i></i></span>}
           {k === 'agent' && <span class="mark agent" set:html={claudeMark} />}
           {data.sources[k].label}
@@ -79,8 +82,22 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed for others</dt></div>
   </dl>
 
-  <p class="mono careerlabel">By year, 2013 to today. Click one to see it above.</p>
-  <div class="career" role="group" aria-label="Pick a year">
+  <p class="mono careerlabel">By year and employer. Click a year to see it above.</p>
+  <div class="eras" style={`--cols:${totals.length}`} role="list" aria-label="Employers by year">
+    {eras.map((e) => (
+      <div class={`era era-${e.key}`} role="listitem" style={`grid-column:${e.col} / span ${e.span}`} title={`${data.sources[e.key].label}, ${eraTitle(e)}`}>
+        <span class="era-name">
+          {e.key === 'cio' && <span class="mark cio" set:html={cioMark} />}
+          {e.key === 'vidyard' && <span class="mark vidyard"><img src="/brand/vidyard.png" alt="" width="14" height="14" /></span>}
+          {e.key === 'indie' && <span class="mark indie" set:html={vidhubMark} />}
+          <span class="txt">{data.sources[e.key].label}</span>
+          <span class="sr">, {eraTitle(e)}</span>
+        </span>
+        <span class="bracket" aria-hidden="true"></span>
+      </div>
+    ))}
+  </div>
+  <div class="career" style={`--cols:${totals.length}`} role="group" aria-label="Pick a year">
     {totals.map((t, i) => (
       <button class="yr" data-year={t.year} aria-pressed={t.year === year ? 'true' : 'false'} title={`${t.year}: ${t.total} contributions`}>
         <span class="bar" aria-hidden="true">
@@ -93,7 +110,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     ))}
   </div>
 
-  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard, the Vidhub and freelance years, and personal projects. Claude Code chats stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year.</p>
+  <p id="pulse-desc" class="sr">Daily GitHub contributions over a year, one column per week, stacked by source: Customer.io, Vidyard, Vidhub, and personal projects. Claude Code chats stack on top of each day in Claude's colour, lighter for smaller models. Use arrow keys to move between days. The row of yearly bars picks a year; labels above it mark which years were spent at Vidhub, Vidyard and Customer.io.</p>
 </section>
 
 <script>
@@ -256,7 +273,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .mark.vidyard { background: #fff; border-radius: 999px; }
   .mark.vidyard img { width: 1.05rem; height: 1.05rem; border-radius: 999px; }
   .mark.personal i { width: 0.7rem; height: 0.7rem; border-radius: 3px; background: var(--personal); display: block; }
-  .mark.indie i { width: 0.7rem; height: 0.7rem; border-radius: 999px; background: var(--indie); display: block; }
+  .mark.indie { background: #e6f3fb; color: var(--indie); }
   .mark.agent { color: var(--agent); }
   .mark.agent :global(svg) { width: 0.95rem; height: 0.95rem; }
   .src[aria-pressed="false"] { color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
@@ -296,8 +313,23 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   .stats dt span { color: var(--ink); font-weight: 600; }
 
   .careerlabel { margin: 1.5rem 0 0.4rem; color: var(--faint); font-size: 0.68rem; }
-  .career { display: flex; gap: 0.35rem; align-items: flex-end; overflow-x: auto; }
-  .yr { all: unset; cursor: pointer; flex: 1 1 0; min-width: 1.6rem; display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; padding: 0.25rem 0.15rem; border-radius: var(--r-m); transition: background 150ms ease; }
+  .eras, .career { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 0.35rem; }
+  .eras { margin-bottom: 0.45rem; }
+  .era { --era-ink: var(--faint); display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; container: era / inline-size; }
+  /* The last era may spill its name a little past the grid into the section padding; the rest clip. */
+  .era:last-child { container-name: era-last; }
+  .era-cio { --era-ink: var(--cio); }
+  .era-vidyard { --era-ink: var(--vidyard); }
+  .era-indie { --era-ink: var(--indie); }
+  .era-name { display: flex; align-items: center; gap: 0.4rem; padding: 0 0.15rem; font-family: var(--sans); font-size: 0.78rem; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; line-height: 1.3; }
+  .era:last-child .era-name { overflow: visible; }
+  .era .mark { width: 1.15rem; height: 1.15rem; flex: none; }
+  .era .mark.vidyard img { width: 0.95rem; height: 0.95rem; }
+  .bracket { display: block; height: 2px; margin: 0 0.15rem; border-radius: 999px; background: var(--era-ink); }
+  @container era (max-width: 6rem) { .era .txt { display: none; } }
+  @container era-last (max-width: 4.6rem) { .era .txt { display: none; } }
+  .career { align-items: end; }
+  .yr { all: unset; cursor: pointer; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; padding: 0.25rem 0.15rem; border-radius: var(--r-m); transition: background 150ms ease; }
   .yr:hover { background: var(--surface); }
   .yr[aria-pressed="true"] { background: var(--surface); }
   .yr[aria-pressed="true"] .lbl { color: var(--ink); font-weight: 500; }
@@ -324,7 +356,12 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     .lbl { font-size: 0.55rem; }
     .lbl.alt { visibility: hidden; }
     .yr[aria-pressed="true"] .lbl.alt { visibility: visible; }
-    .career { gap: 0.2rem; overflow-x: visible; }
+    .eras, .career { gap: 0.2rem; }
+    .era-name { font-size: 0.7rem; padding: 0 0.05rem; gap: 0.3rem; }
+    .era .mark { width: 1rem; height: 1rem; border-radius: 4px; }
+    .era .mark :global(svg) { width: 0.65rem; height: 0.65rem; }
+    .era .mark.vidyard img { width: 0.85rem; height: 0.85rem; }
+    .bracket { margin: 0 0.05rem; }
     .tip { display: none; }
   }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

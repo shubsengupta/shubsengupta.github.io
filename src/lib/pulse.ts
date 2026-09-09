@@ -274,3 +274,42 @@ export function yearTotals(data: PulseData): YearTotal[] {
   }
   return [...map.values()].sort((a, b) => a.year - b.year);
 }
+
+// Employer eras, mirrored from scripts/lib/era.mjs. Each runs from the
+// previous boundary up to (not including) `until`.
+export const ERA_BOUNDS: Array<{ key: SourceKey; until: string }> = [
+  { key: 'indie', until: '2018-10-01' },
+  { key: 'vidyard', until: '2025-12-03' },
+  { key: 'cio', until: '9999-12-31' },
+];
+
+// The era that owns most of a calendar year, so transition years land with
+// whoever Shub spent more of the year with.
+export function eraOfYear(year: number, eras = ERA_BOUNDS): SourceKey {
+  const y0 = Date.parse(`${year}-01-01T00:00:00Z`);
+  const y1 = Date.parse(`${year + 1}-01-01T00:00:00Z`);
+  let best: { key: SourceKey; days: number } | null = null;
+  let from = -Infinity;
+  for (const e of eras) {
+    const to = Date.parse(e.until + 'T00:00:00Z');
+    const days = Math.max(0, Math.min(y1, to) - Math.max(y0, from));
+    if (!best || days > best.days) best = { key: e.key, days };
+    from = to;
+  }
+  return best!.key;
+}
+
+export type EraSpan = { key: SourceKey; from: number; to: number; col: number; span: number };
+
+// Consecutive runs of years sharing an era, with 1-based grid columns so the
+// label row can sit on the same grid as the yearly bars.
+export function eraSpans(years: number[], eras = ERA_BOUNDS): EraSpan[] {
+  const out: EraSpan[] = [];
+  years.forEach((y, i) => {
+    const key = eraOfYear(y, eras);
+    const last = out.at(-1);
+    if (last && last.key === key) { last.to = y; last.span++; }
+    else out.push({ key, from: y, to: y, col: i + 1, span: 1 });
+  });
+  return out;
+}

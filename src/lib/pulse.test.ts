@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, modelFamily, agentInk, mergeClaude, fmtTokens, type PulseData } from './pulse.ts';
+import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, modelFamily, agentInk, mergeClaude, fmtTokens, eraOfYear, eraSpans, ERA_BOUNDS, type PulseData } from './pulse.ts';
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z',
@@ -8,7 +8,7 @@ const data: PulseData = {
   sources: {
     cio: { label: 'Customer.io', ink: '#00262b' },
     vidyard: { label: 'Vidyard', ink: '#3bcb85' },
-    indie: { label: 'Vidhub & freelance', ink: '#8b98a3' },
+    indie: { label: 'Vidhub', ink: '#8ccbf2' },
     personal: { label: 'Personal', ink: '#3b6fe0' },
     agent: { label: 'Claude chats', ink: '#d97757' },
   },
@@ -106,7 +106,7 @@ test('yearTotals covers every year from first data to now, oldest first', () => 
   assert.equal(ys.at(-1)!.year, new Date().getUTCFullYear());
   assert.deepEqual(ys[0].by, { indie: 4 });
   assert.deepEqual(ys.find((y) => y.year === 2019)!.by, { vidyard: 6 });
-  assert.equal(readout(data, '2015-05-01'), 'Fri May 1 · 4 Vidhub & freelance');
+  assert.equal(readout(data, '2015-05-01'), 'Fri May 1 · 4 Vidhub');
   assert.equal(ys.find((y) => y.year === 2026)!.total, 22);
 });
 
@@ -141,4 +141,24 @@ test('fmtTokens', () => {
   assert.equal(fmtTokens(12345), '12k');
   assert.equal(fmtTokens(30840118), '30.8M');
   assert.equal(fmtTokens(2.1e9), '2.1B');
+});
+
+test('eraOfYear gives a transition year to whoever owned more of it', () => {
+  assert.equal(eraOfYear(2013), 'indie');
+  assert.equal(eraOfYear(2018), 'indie');
+  assert.equal(eraOfYear(2019), 'vidyard');
+  assert.equal(eraOfYear(2025), 'vidyard');
+  assert.equal(eraOfYear(2026), 'cio');
+  assert.equal(eraOfYear(2018, [{ key: 'indie', until: '2018-03-01' }, { key: 'vidyard', until: '9999-12-31' }]), 'vidyard');
+  assert.equal(ERA_BOUNDS.map((e) => e.key).join(','), 'indie,vidyard,cio');
+});
+
+test('eraSpans groups consecutive years into 1-based grid columns', () => {
+  const years = Array.from({ length: 14 }, (_, i) => 2013 + i);
+  assert.deepEqual(eraSpans(years), [
+    { key: 'indie', from: 2013, to: 2018, col: 1, span: 6 },
+    { key: 'vidyard', from: 2019, to: 2025, col: 7, span: 7 },
+    { key: 'cio', from: 2026, to: 2026, col: 14, span: 1 },
+  ]);
+  assert.deepEqual(eraSpans([]), []);
 });
