@@ -10,7 +10,7 @@ const data: PulseData = {
     vidyard: { label: 'Vidyard', ink: '#3bcb85' },
     indie: { label: 'Vidhub', ink: '#8ccbf2' },
     personal: { label: 'Personal', ink: '#3b6fe0' },
-    agent: { label: 'Claude sessions', ink: '#d97757' },
+    agent: { label: 'AI', ink: '#d97757' },
   },
   days: {
     '2026-09-01': { cio: 14, personal: 2, prs: 3, agentPrs: 2, agent: 2, tokens: 1500000, model: 'Fable 5.1' },

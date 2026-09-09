@@ -16,7 +16,7 @@ const SOURCES = {
   vidyard: { label: 'Vidyard', ink: '#3bcb85' },
   indie: { label: 'Vidhub', ink: '#8ccbf2' },
   personal: { label: 'Personal', ink: '#3b6fe0' },
-  agent: { label: 'Claude sessions', ink: '#d97757' },
+  agent: { label: 'AI', ink: '#d97757' },
 };
 
 const { values: args } = parseArgs({ options: {
