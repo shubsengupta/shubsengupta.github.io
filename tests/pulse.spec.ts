@@ -35,7 +35,7 @@ test('career strip picks a year and tooltip follows hover', async ({ page }) => 
 
 test('agent signals: stats and stacked agent layer', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('#st-prs')).not.toHaveText('0');
+  await expect(page.locator('#st-commits')).not.toHaveText('0');
   await expect(page.locator('#st-agent')).toContainText('%');
   await expect(page.locator('#st-sessions')).not.toHaveText('0');
   await expect(page.locator('#st-tokens')).toContainText(/[kMB]$/);

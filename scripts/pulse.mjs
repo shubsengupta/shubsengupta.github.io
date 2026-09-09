@@ -88,6 +88,8 @@ async function main() {
     fresh[day] = {
       cio: cio[day]?.count ?? 0,
       personal: personal[day]?.count ?? 0,
+      commits: (cio[day]?.count ?? 0) + (personal[day]?.count ?? 0),
+      aiCommits: (cio[day]?.ai ?? 0) + (personal[day]?.ai ?? 0),
       prs: prs[day]?.count ?? 0,
       agentPrs: prs[day]?.agent ?? 0,
       model: topModel(models[day]) ?? '',

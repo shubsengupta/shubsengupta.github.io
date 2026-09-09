@@ -25,10 +25,10 @@ test('pre-Vidyard days are the indie era', () => {
 });
 
 test('post-cutover days lift cio to calendar - personal, never below the searched count', () => {
-  const days = { '2026-08-06': { cio: 7, personal: 0, prs: 1 }, '2026-08-07': { cio: 4, personal: 1 } };
+  const days = { '2026-08-06': { cio: 7, personal: 0, commits: 7 }, '2026-08-07': { cio: 4, personal: 1 } };
   const calendar = { '2026-08-06': 15, '2026-08-07': 3, '2026-08-08': 2 };
   assert.deepEqual(applyEra(days, calendar, '2025-12-03'), {
-    '2026-08-06': { cio: 15, personal: 0, prs: 1 },
+    '2026-08-06': { cio: 15, personal: 0, commits: 7 },
     '2026-08-07': { cio: 4, personal: 1 },
     '2026-08-08': { cio: 2 },
   });

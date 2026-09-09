@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, modelFamily, agentInk, mergeClaude, fmtTokens, eraOfYear, eraSpans, ERA_BOUNDS, type PulseData } from './pulse.ts';
+import { commitsOf, yearGrid, scale, renderGrid, readout, stats, availableYears, monthLabels, yearSummary, yearTotals, dayRows, modelFamily, agentInk, mergeClaude, fmtTokens, eraOfYear, eraSpans, ERA_BOUNDS, type PulseData } from './pulse.ts';
 
 const data: PulseData = {
   generatedAt: '2026-09-04T00:00:00Z',
@@ -13,9 +13,9 @@ const data: PulseData = {
     agent: { label: 'AI', ink: '#d97757' },
   },
   days: {
-    '2026-09-01': { cio: 14, personal: 2, prs: 3, agentPrs: 2, agent: 2, tokens: 1500000, model: 'Fable 5.1' },
+    '2026-09-01': { cio: 14, personal: 2, commits: 6, aiCommits: 4, agent: 2, tokens: 1500000, model: 'Fable 5.1' },
     '2026-09-02': { cio: 1 },
-    '2026-09-03': { cio: 2, prs: 1, agentPrs: 1, agent: 1, model: 'Opus 5' },
+    '2026-09-03': { cio: 2, commits: 2, aiCommits: 2, agent: 1, model: 'Opus 5' },
     '2019-03-12': { vidyard: 6 },
     '2015-05-01': { indie: 4 },
   },
@@ -50,16 +50,17 @@ test('hidden sources are not rendered', () => {
 });
 
 test('readout names the model', () => {
-  assert.equal(readout(data, '2026-09-01'), 'Tue Sep 1 · 14 Customer.io · 2 personal · 3 PRs · 2 Claude sessions on Fable 5.1 · 1.5M tokens');
+  assert.equal(readout(data, '2026-09-01'), 'Tue Sep 1 · 14 Customer.io · 2 personal · 6 commits (4 with Claude) · 2 Claude sessions on Fable 5.1 · 1.5M tokens');
   assert.equal(readout(data, '2026-09-04'), 'Fri Sep 4 · quiet');
 });
 
-test('stats count contributions without the agent layer, plus PRs, agent share and reviews', () => {
+test('stats count contributions without the agent layer, plus commits, Claude share and reviews', () => {
   const s = stats(data, 2026, new Set());
   assert.deepEqual(s.busiest, { date: '2026-09-01', total: 16 });
   assert.equal(s.contributions, 19);
-  assert.equal(s.prs, 4);
-  assert.equal(s.agentShare, 75);
+  assert.equal(s.commits, 8);
+  assert.equal(s.aiCommits, 6);
+  assert.equal(s.aiShare, 75);
   assert.equal(s.sessions, 3);
   assert.equal(s.tokens, 1500000);
   assert.equal(s.reviews, 137);
@@ -89,7 +90,7 @@ test('a sliced strip labels its first column', () => {
 
 test('yearSummary lists contributions, sources and PRs', () => {
   assert.equal(yearSummary(data, 2019, new Set()), '2019 · 6 contributions · Vidyard');
-  assert.equal(yearSummary(data, 2026, new Set()), '2026 · 19 contributions · Customer.io · Personal · 4 PRs · 3 Claude sessions · 1.5M tokens');
+  assert.equal(yearSummary(data, 2026, new Set()), '2026 · 19 contributions · Customer.io · Personal · 8 commits · 3 Claude sessions · 1.5M tokens');
 });
 
 test('column slices re-base x to zero and only include their weeks', () => {
@@ -113,7 +114,7 @@ test('yearTotals covers every year from first data to now, oldest first', () => 
 test('dayRows lists the sources present on a day with the model named', () => {
   assert.deepEqual(dayRows(data, '2026-09-02').map((r) => r.key), ['cio']);
   assert.deepEqual(dayRows(data, '2026-09-01').map((r) => [r.key, r.n, r.label]), [
-    ['cio', 14, 'Customer.io'], ['personal', 2, 'Personal'], ['prs', 3, 'PRs opened'], ['agent', 2, 'Claude sessions on Fable 5.1'], ['tokens', '1.5M', 'tokens from Claude'],
+    ['cio', 14, 'Customer.io'], ['personal', 2, 'Personal'], ['commits', 6, 'commits, 4 with Claude'], ['agent', 2, 'Claude sessions on Fable 5.1'], ['tokens', '1.5M', 'tokens from Claude'],
   ]);
   assert.deepEqual(dayRows(data, '2026-09-04'), []);
 });
@@ -161,4 +162,11 @@ test('eraSpans groups consecutive years into 1-based grid columns', () => {
     { key: 'cio', from: 2026, to: 2026, col: 14, span: 1 },
   ]);
   assert.deepEqual(eraSpans([]), []);
+});
+
+test('commitsOf falls back to the personal count for pre-Customer.io records', () => {
+  assert.equal(commitsOf({ personal: 3 }), 3);
+  assert.equal(commitsOf({ personal: 3, commits: 5 }), 5);
+  assert.equal(commitsOf({ vidyard: 4 }), 0);
+  assert.equal(commitsOf(undefined), 0);
 });

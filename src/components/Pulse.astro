@@ -78,7 +78,7 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
   <dl class="stats">
     <div class="claude"><dd id="st-sessions">{s.sessions.toLocaleString('en-CA')}</dd><dt>Claude Code sessions</dt></div>
     <div class="claude"><dd id="st-tokens">{fmtTokens(s.tokens)}</dd><dt>tokens from Claude</dt></div>
-    <div><dd id="st-prs">{s.prs}</dd><dt><span id="st-agent">{s.agentShare}%</span> of PRs built with Claude</dt></div>
+    <div><dd id="st-commits">{s.commits.toLocaleString('en-CA')}</dd><dt>commits, <span id="st-agent">{s.aiShare}%</span> with Claude</dt></div>
     <div><dd id="st-reviews">{s.reviews}</dd><dt>PRs reviewed for others</dt></div>
   </dl>
 
@@ -172,8 +172,8 @@ const dayLabels = weekdays.map((w) => `<text class="dow" x="${-GUTTER + 4}" y="$
     const s = stats(d, year, hidden);
     document.getElementById('st-sessions')!.textContent = s.sessions.toLocaleString('en-CA');
     document.getElementById('st-tokens')!.textContent = fmtTokens(s.tokens);
-    document.getElementById('st-prs')!.textContent = String(s.prs);
-    document.getElementById('st-agent')!.textContent = `${s.agentShare}%`;
+    document.getElementById('st-commits')!.textContent = s.commits.toLocaleString('en-CA');
+    document.getElementById('st-agent')!.textContent = `${s.aiShare}%`;
     document.getElementById('st-reviews')!.textContent = String(s.reviews);
     if (focused) markFocus(focused);
   }

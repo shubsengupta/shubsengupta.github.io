@@ -1,5 +1,9 @@
 export type SourceKey = 'cio' | 'vidyard' | 'indie' | 'personal' | 'agent';
-export type Day = Partial<Record<SourceKey | 'prs' | 'agentPrs' | 'tokens' | 'turns', number>> & { model?: string };
+export type Day = Partial<Record<SourceKey | 'commits' | 'aiCommits' | 'prs' | 'agentPrs' | 'tokens' | 'turns', number>> & { model?: string };
+
+// Search-visible commits for a day. Before the Customer.io era only personal
+// repos were searched, so older records carry the count under `personal`.
+export const commitsOf = (day: Day | undefined): number => day?.commits ?? day?.personal ?? 0;
 export type ClaudeData = { generatedAt: string; days: Record<string, { sessions?: number; turns?: number; outputTokens?: number; model?: string }> };
 export type PulseData = {
   generatedAt: string;
@@ -180,20 +184,20 @@ export function readout(data: PulseData, date: string): string {
   if (day?.vidyard) bits.push(`${day.vidyard} ${data.sources.vidyard.label}`);
   if (day?.indie) bits.push(`${day.indie} ${data.sources.indie.label}`);
   if (day?.personal) bits.push(`${day.personal} ${data.sources.personal.label.toLowerCase()}`);
-  if (day?.prs) bits.push(`${day.prs} PR${day.prs === 1 ? '' : 's'}`);
+  if (commitsOf(day)) bits.push(`${commitsOf(day)} commit${commitsOf(day) === 1 ? '' : 's'}${day?.aiCommits ? ` (${day.aiCommits} with Claude)` : ''}`);
   if (day?.agent) bits.push(`${day.agent} Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`);
   if (day?.tokens) bits.push(`${fmtTokens(day.tokens)} tokens`);
   return [formatDate(date), ...(bits.length ? bits : ['quiet'])].join(' · ');
 }
 
-export type DayRow = { key: SourceKey | 'prs' | 'tokens'; label: string; ink: string | null; n: number | string };
+export type DayRow = { key: SourceKey | 'commits' | 'tokens'; label: string; ink: string | null; n: number | string };
 
 export function dayRows(data: PulseData, date: string): DayRow[] {
   const day = data.days[date];
   if (!day) return [];
   const rows: DayRow[] = [];
   for (const k of WORK) if (day[k]) rows.push({ key: k, label: data.sources[k].label, ink: data.sources[k].ink, n: day[k]! });
-  if (day.prs) rows.push({ key: 'prs', label: day.prs === 1 ? 'PR opened' : 'PRs opened', ink: null, n: day.prs });
+  if (commitsOf(day)) rows.push({ key: 'commits', label: `commit${commitsOf(day) === 1 ? '' : 's'}${day.aiCommits ? `, ${day.aiCommits} with Claude` : ''}`, ink: null, n: commitsOf(day) });
   if (day.agent) rows.push({ key: 'agent', label: `Claude session${day.agent === 1 ? '' : 's'}${day.model ? ` on ${day.model}` : ''}`, ink: agentInk(day), n: day.agent });
   if (day.tokens) rows.push({ key: 'tokens', label: 'tokens from Claude', ink: null, n: fmtTokens(day.tokens) });
   return rows;
@@ -205,16 +209,16 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
   const noAgent = new Set<SourceKey>([...hidden, 'agent']);
   let busiest: { date: string; total: number } | null = null;
   let contributions = 0;
-  let prs = 0;
-  let agentPrs = 0;
+  let commits = 0;
+  let aiCommits = 0;
   let sessions = 0;
   let tokens = 0;
   for (const d of dates) {
     const day = data.days[d];
     const t = stackTotal(day, noAgent);
     contributions += t;
-    prs += day?.prs ?? 0;
-    agentPrs += day?.agentPrs ?? 0;
+    commits += commitsOf(day);
+    aiCommits += day?.aiCommits ?? 0;
     sessions += day?.agent ?? 0;
     tokens += day?.tokens ?? 0;
     if (t > (busiest?.total ?? 0)) busiest = { date: d, total: t };
@@ -227,7 +231,7 @@ export function stats(data: PulseData, year: number, hidden: Set<SourceKey>) {
     else break;
   }
   const reviews = data.years?.[String(year)]?.reviews ?? 0;
-  return { streak, busiest, contributions, prs, agentPrs, agentShare: prs ? Math.round((agentPrs / prs) * 100) : 0, sessions, tokens, reviews };
+  return { streak, busiest, contributions, commits, aiCommits, aiShare: commits ? Math.round((aiCommits / commits) * 100) : 0, sessions, tokens, reviews };
 }
 
 export function availableYears(data: PulseData): number[] {
@@ -251,7 +255,7 @@ export function yearSummary(data: PulseData, year: number, hidden: Set<SourceKey
   }
   const labels = WORK.filter((k) => totals[k]).map((k) => data.sources[k].label);
   const bits = [String(year), `${s.contributions.toLocaleString('en-CA')} contributions`, ...labels];
-  if (s.prs) bits.push(`${s.prs} PRs`);
+  if (s.commits) bits.push(`${s.commits.toLocaleString('en-CA')} commits`);
   if (s.sessions) bits.push(`${s.sessions} Claude sessions`);
   if (s.tokens) bits.push(`${fmtTokens(s.tokens)} tokens`);
   return bits.join(' · ');
