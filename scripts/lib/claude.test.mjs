@@ -34,12 +34,13 @@ test('stats cache gives sessions and turns only', () => {
   assert.deepEqual(days, { '2026-01-22': { sessions: 3, turns: 282 } });
 });
 
-test('merge keeps history, lets logs override the cache and the cache override old records', () => {
-  const existing = { '2026-01-01': { sessions: 1, turns: 5 }, '2026-06-01': { sessions: 2, turns: 9, outputTokens: 100 } };
-  const cache = { '2026-01-01': { sessions: 2, turns: 6 }, '2026-06-01': { sessions: 3, turns: 10 } };
-  const logs = { '2026-06-01': { sessions: 4, turns: 12, outputTokens: 300 } };
+test('merge prefers logs over the cache for a day, and never lets a re-read shrink stored counts', () => {
+  const existing = { '2026-01-01': { sessions: 1, turns: 5 }, '2026-06-01': { sessions: 4, turns: 12, outputTokens: 300, model: 'Fable 5' } };
+  const cache = { '2026-01-01': { sessions: 2, turns: 6 }, '2026-06-01': { sessions: 9, turns: 99 } };
+  const logs = { '2026-06-01': { sessions: 2, turns: 7, outputTokens: 120, model: 'Opus 5' }, '2026-06-02': { sessions: 1, turns: 1, outputTokens: 9, model: 'Haiku 4.5' } };
   assert.deepEqual(mergeClaudeDays(existing, cache, logs), {
     '2026-01-01': { sessions: 2, turns: 6 },
-    '2026-06-01': { sessions: 4, turns: 12, outputTokens: 300 },
+    '2026-06-01': { sessions: 4, turns: 12, outputTokens: 300, model: 'Fable 5' },
+    '2026-06-02': { sessions: 1, turns: 1, outputTokens: 9, model: 'Haiku 4.5' },
   });
 });

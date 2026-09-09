@@ -79,11 +79,25 @@ export function readStatsCache(json) {
   return out;
 }
 
-// Logs beat the cache beat what we stored before, day by day, so pruned logs
-// never erase history and re-reading a live day never double counts.
+// Logs are the best source for a day and the cache fills days the logs no
+// longer cover. A past day's counts can only grow, but Claude Code prunes old
+// session logs, so a re-read of a half-pruned day comes back smaller: keep the
+// larger value per field against what we stored before.
 export function mergeClaudeDays(existing, fromCache, fromLogs) {
-  const out = { ...existing };
-  for (const [d, v] of Object.entries(fromCache)) out[d] = { ...(out[d] ?? {}), ...v };
-  for (const [d, v] of Object.entries(fromLogs)) out[d] = { ...(out[d] ?? {}), ...v };
+  const out = {};
+  const days = new Set([...Object.keys(existing), ...Object.keys(fromCache), ...Object.keys(fromLogs)]);
+  for (const d of days) {
+    const fresh = fromLogs[d] ?? fromCache[d] ?? {};
+    const prev = existing[d] ?? {};
+    const rec = {};
+    for (const k of new Set([...Object.keys(prev), ...Object.keys(fresh)])) {
+      const a = prev[k];
+      const b = fresh[k];
+      if (typeof a === 'number' || typeof b === 'number') rec[k] = Math.max(a ?? 0, b ?? 0);
+    }
+    const model = (fresh.outputTokens ?? 0) >= (prev.outputTokens ?? 0) ? fresh.model ?? prev.model : prev.model ?? fresh.model;
+    if (model) rec.model = model;
+    out[d] = rec;
+  }
   return Object.fromEntries(Object.entries(out).sort(([a], [b]) => (a < b ? -1 : 1)));
 }
