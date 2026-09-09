@@ -1,8 +1,8 @@
 ---
-interface Props { title: string; id: string }
-const { title, id } = Astro.props;
+interface Props { title: string; id: string; first?: boolean }
+const { title, id, first = false } = Astro.props;
 ---
-<section class="sec wrap" id={id} aria-labelledby={`${id}-h`}>
+<section class:list={['sec', 'wrap', { first }]} id={id} aria-labelledby={`${id}-h`}>
   <h2 id={`${id}-h`}>{title}</h2>
   <div class="body">
     <slot />
@@ -10,7 +10,7 @@ const { title, id } = Astro.props;
 </section>
 <style>
   .sec { display: grid; grid-template-columns: 14rem 1fr; gap: 0.5rem 2rem; padding: 2.75rem 1.5rem; border-top: 1px solid var(--line); }
-  :global(.pulse) + .sec { border-top: 0; padding-top: 1.5rem; }
+  .sec.first { border-top: 0; padding-top: 1.5rem; }
   h2 { margin: 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
   .body { max-width: var(--measure); font-size: 1.05rem; line-height: 1.6; }
   .body :global(p) { margin: 0 0 1rem; }

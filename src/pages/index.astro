@@ -23,7 +23,7 @@ const posts = (await getCollection('writing', (p) => !p.data.draft)).sort((a, b)
   <Masthead />
   <Pulse data={data} />
 
-  <Section title="Who I am" id="who">
+  <Section title="Who I am" id="who" first>
     <p>I'm an engineering manager at <a href="https://customer.io" class="brand"><span class="mark cio" set:html={cioMark} />Customer.io</a>, where I lead the Content and Frontend Platform teams. Content means the editors and Design Studio, and right now it means building agentic email creation: an agent that can make, fix and explain a message the way a person on the team would.</p>
     <p>I live in Kitchener, Ontario. I still ship a lot of code for a manager, most of it in long conversations with Claude Code, and I spend a good part of the job trying models and workflows so my teams can work faster. The chart above keeps score.</p>
     <ul class="links">
