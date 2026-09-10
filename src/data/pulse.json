@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-09T18:59:27.158Z",
+ "generatedAt": "2026-09-10T20:30:07.533Z",
  "cutover": "2025-12-03",
  "sources": {
   "cio": {
@@ -4186,6 +4186,11 @@
    "prs": 5,
    "agentPrs": 5,
    "model": "Fable 5.1"
+  },
+  "2026-09-10": {
+   "cio": 2,
+   "prs": 1,
+   "agentPrs": 1
   }
  },
  "years": {
@@ -4193,7 +4198,7 @@
    "reviews": 9
   },
   "2026": {
-   "reviews": 128
+   "reviews": 130
   }
  }
 }

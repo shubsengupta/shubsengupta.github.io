@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-09T19:02:32.978Z",
+ "generatedAt": "2026-09-10T20:30:08.814Z",
  "days": {
   "2026-01-21": {
    "turns": 12,
@@ -670,12 +670,20 @@
    "model": "Opus 5"
   },
   "2026-09-09": {
-   "sessions": 6,
-   "turns": 212,
-   "inputTokens": 4192,
-   "outputTokens": 431507,
-   "cacheRead": 72762818,
-   "model": "Opus 5"
+   "sessions": 7,
+   "turns": 399,
+   "inputTokens": 11580,
+   "outputTokens": 713125,
+   "cacheRead": 166096830,
+   "model": "Fable 5.1"
+  },
+  "2026-09-10": {
+   "sessions": 4,
+   "turns": 216,
+   "inputTokens": 7914,
+   "outputTokens": 409850,
+   "cacheRead": 140390074,
+   "model": "Fable 5.1"
   }
  }
 }
