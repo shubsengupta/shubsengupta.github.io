@@ -1,0 +1,689 @@
+{
+ "generatedAt": "2026-09-10T20:30:08.814Z",
+ "days": {
+  "2026-01-21": {
+   "turns": 12,
+   "sessions": 1
+  },
+  "2026-01-22": {
+   "turns": 282,
+   "sessions": 3
+  },
+  "2026-01-23": {
+   "turns": 28,
+   "sessions": 2
+  },
+  "2026-01-26": {
+   "turns": 318,
+   "sessions": 1
+  },
+  "2026-01-27": {
+   "turns": 1153,
+   "sessions": 11
+  },
+  "2026-01-28": {
+   "turns": 2118,
+   "sessions": 14
+  },
+  "2026-01-30": {
+   "turns": 582,
+   "sessions": 1
+  },
+  "2026-02-02": {
+   "turns": 528,
+   "sessions": 3
+  },
+  "2026-02-03": {
+   "turns": 2424,
+   "sessions": 3
+  },
+  "2026-02-04": {
+   "turns": 276,
+   "sessions": 1
+  },
+  "2026-02-10": {
+   "turns": 207,
+   "sessions": 2
+  },
+  "2026-02-11": {
+   "turns": 5,
+   "sessions": 1
+  },
+  "2026-02-13": {
+   "turns": 365,
+   "sessions": 1
+  },
+  "2026-04-20": {
+   "turns": 4294,
+   "sessions": 3
+  },
+  "2026-04-21": {
+   "turns": 145,
+   "sessions": 2
+  },
+  "2026-04-23": {
+   "turns": 130,
+   "sessions": 2
+  },
+  "2026-04-27": {
+   "turns": 1205,
+   "sessions": 3
+  },
+  "2026-04-28": {
+   "turns": 1350,
+   "sessions": 2
+  },
+  "2026-04-29": {
+   "turns": 745,
+   "sessions": 1
+  },
+  "2026-04-30": {
+   "turns": 177,
+   "sessions": 1
+  },
+  "2026-05-01": {
+   "turns": 20,
+   "sessions": 1
+  },
+  "2026-05-04": {
+   "turns": 461,
+   "sessions": 3
+  },
+  "2026-05-05": {
+   "turns": 1582,
+   "sessions": 7
+  },
+  "2026-05-07": {
+   "turns": 256,
+   "sessions": 5
+  },
+  "2026-05-08": {
+   "turns": 57,
+   "sessions": 2
+  },
+  "2026-05-19": {
+   "turns": 672,
+   "sessions": 3
+  },
+  "2026-05-20": {
+   "turns": 1054,
+   "sessions": 6
+  },
+  "2026-05-21": {
+   "turns": 198,
+   "sessions": 1
+  },
+  "2026-05-22": {
+   "turns": 1191,
+   "sessions": 4
+  },
+  "2026-05-25": {
+   "turns": 130,
+   "inputTokens": 27300,
+   "outputTokens": 196000,
+   "cacheRead": 23888143,
+   "sessions": 1,
+   "model": "Opus 4.7"
+  },
+  "2026-05-26": {
+   "turns": 153,
+   "inputTokens": 3451,
+   "outputTokens": 218705,
+   "cacheRead": 59176796,
+   "sessions": 1,
+   "model": "Opus 4.7"
+  },
+  "2026-05-27": {
+   "turns": 268,
+   "inputTokens": 2099,
+   "outputTokens": 372443,
+   "cacheRead": 172458432,
+   "sessions": 1,
+   "model": "Opus 4.7"
+  },
+  "2026-05-28": {
+   "turns": 38,
+   "inputTokens": 836,
+   "outputTokens": 60002,
+   "cacheRead": 16678667,
+   "sessions": 1,
+   "model": "Opus 4.7"
+  },
+  "2026-05-29": {
+   "turns": 44,
+   "sessions": 2
+  },
+  "2026-06-08": {
+   "turns": 3,
+   "sessions": 1
+  },
+  "2026-06-09": {
+   "turns": 69,
+   "inputTokens": 45050,
+   "outputTokens": 70918,
+   "cacheRead": 62970580,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-06-10": {
+   "turns": 3,
+   "inputTokens": 0,
+   "outputTokens": 0,
+   "cacheRead": 0,
+   "sessions": 1
+  },
+  "2026-06-11": {
+   "turns": 431,
+   "sessions": 0
+  },
+  "2026-06-12": {
+   "turns": 1128,
+   "sessions": 5
+  },
+  "2026-06-15": {
+   "turns": 1841,
+   "sessions": 19
+  },
+  "2026-06-16": {
+   "turns": 1250,
+   "sessions": 7
+  },
+  "2026-06-17": {
+   "turns": 238,
+   "inputTokens": 179871,
+   "outputTokens": 315637,
+   "cacheRead": 232197228,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-06-18": {
+   "turns": 241,
+   "inputTokens": 43230,
+   "outputTokens": 434872,
+   "cacheRead": 109627925,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-06-19": {
+   "turns": 198,
+   "inputTokens": 66929,
+   "outputTokens": 499696,
+   "cacheRead": 206084178,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-06-23": {
+   "turns": 224,
+   "inputTokens": 142450,
+   "outputTokens": 466769,
+   "cacheRead": 135881865,
+   "sessions": 2,
+   "model": "Opus 4.8"
+  },
+  "2026-06-24": {
+   "turns": 126,
+   "inputTokens": 61896,
+   "outputTokens": 296645,
+   "cacheRead": 72562142,
+   "sessions": 2,
+   "model": "Opus 4.8"
+  },
+  "2026-06-25": {
+   "turns": 54,
+   "inputTokens": 27174,
+   "outputTokens": 245116,
+   "cacheRead": 10525407,
+   "sessions": 2,
+   "model": "Opus 4.8"
+  },
+  "2026-06-29": {
+   "turns": 101,
+   "inputTokens": 41627,
+   "outputTokens": 224243,
+   "cacheRead": 44272178,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-06-30": {
+   "turns": 155,
+   "inputTokens": 93324,
+   "outputTokens": 397915,
+   "cacheRead": 65010411,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-07-02": {
+   "turns": 15,
+   "inputTokens": 506,
+   "outputTokens": 24482,
+   "cacheRead": 10992152,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-07-03": {
+   "turns": 1014,
+   "sessions": 4
+  },
+  "2026-07-06": {
+   "turns": 1279,
+   "sessions": 3
+  },
+  "2026-07-07": {
+   "turns": 2585,
+   "sessions": 5
+  },
+  "2026-07-08": {
+   "turns": 1356,
+   "sessions": 7
+  },
+  "2026-07-09": {
+   "turns": 1961,
+   "sessions": 5
+  },
+  "2026-07-10": {
+   "turns": 1043,
+   "sessions": 3
+  },
+  "2026-07-13": {
+   "turns": 2397,
+   "sessions": 9
+  },
+  "2026-07-14": {
+   "turns": 904,
+   "sessions": 3
+  },
+  "2026-07-15": {
+   "turns": 65,
+   "inputTokens": 63094,
+   "outputTokens": 126017,
+   "cacheRead": 48310902,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-07-16": {
+   "turns": 8,
+   "inputTokens": 30,
+   "outputTokens": 7447,
+   "cacheRead": 799884,
+   "sessions": 1,
+   "model": "Sonnet 5"
+  },
+  "2026-07-17": {
+   "turns": 262,
+   "inputTokens": 828,
+   "outputTokens": 299741,
+   "cacheRead": 91878132,
+   "sessions": 1,
+   "model": "Fable 5"
+  },
+  "2026-07-18": {
+   "turns": 27,
+   "inputTokens": 100,
+   "outputTokens": 52963,
+   "cacheRead": 10205852,
+   "sessions": 2,
+   "model": "Sonnet 5"
+  },
+  "2026-07-20": {
+   "turns": 924,
+   "sessions": 3
+  },
+  "2026-07-21": {
+   "turns": 378,
+   "sessions": 2
+  },
+  "2026-07-22": {
+   "turns": 84,
+   "inputTokens": 341,
+   "outputTokens": 186802,
+   "cacheRead": 18049469,
+   "sessions": 2,
+   "model": "Sonnet 5"
+  },
+  "2026-07-23": {
+   "turns": 11,
+   "inputTokens": 47,
+   "outputTokens": 34819,
+   "cacheRead": 1919695,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-07-24": {
+   "turns": 52,
+   "sessions": 1
+  },
+  "2026-07-27": {
+   "turns": 94,
+   "inputTokens": 92400,
+   "outputTokens": 340338,
+   "cacheRead": 54100513,
+   "sessions": 1,
+   "model": "Opus 4.8"
+  },
+  "2026-07-28": {
+   "turns": 73,
+   "inputTokens": 3432,
+   "outputTokens": 135643,
+   "cacheRead": 26007819,
+   "sessions": 2,
+   "model": "Opus 5"
+  },
+  "2026-07-29": {
+   "turns": 588,
+   "inputTokens": 25303,
+   "outputTokens": 707279,
+   "cacheRead": 542502074,
+   "sessions": 2,
+   "model": "Opus 5"
+  },
+  "2026-07-30": {
+   "turns": 290,
+   "inputTokens": 943,
+   "outputTokens": 287616,
+   "cacheRead": 61057176,
+   "sessions": 3,
+   "model": "Opus 5"
+  },
+  "2026-08-04": {
+   "turns": 934,
+   "inputTokens": 46895,
+   "outputTokens": 952141,
+   "cacheRead": 448485499,
+   "sessions": 6,
+   "model": "Fable 5"
+  },
+  "2026-08-05": {
+   "turns": 1134,
+   "inputTokens": 17532,
+   "outputTokens": 1779552,
+   "cacheRead": 501592540,
+   "sessions": 12,
+   "model": "Fable 5"
+  },
+  "2026-08-06": {
+   "turns": 431,
+   "inputTokens": 4871,
+   "outputTokens": 627898,
+   "cacheRead": 149622104,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-07": {
+   "turns": 2405,
+   "inputTokens": 36072,
+   "outputTokens": 2833454,
+   "cacheRead": 1209274952,
+   "sessions": 19,
+   "model": "Opus 5"
+  },
+  "2026-08-08": {
+   "turns": 240,
+   "inputTokens": 984,
+   "outputTokens": 284387,
+   "cacheRead": 72359400,
+   "sessions": 4,
+   "model": "Opus 5"
+  },
+  "2026-08-09": {
+   "turns": 9,
+   "inputTokens": 90,
+   "outputTokens": 6177,
+   "cacheRead": 180135,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-08-10": {
+   "turns": 1224,
+   "inputTokens": 13848,
+   "outputTokens": 1353623,
+   "cacheRead": 462872717,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-11": {
+   "turns": 1195,
+   "inputTokens": 4125,
+   "outputTokens": 1377212,
+   "cacheRead": 574854563,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-12": {
+   "turns": 180,
+   "inputTokens": 8195,
+   "outputTokens": 117025,
+   "cacheRead": 84656672,
+   "sessions": 5,
+   "model": "Fable 5"
+  },
+  "2026-08-13": {
+   "turns": 576,
+   "inputTokens": 3775,
+   "outputTokens": 761156,
+   "cacheRead": 149298449,
+   "sessions": 12,
+   "model": "Opus 5"
+  },
+  "2026-08-14": {
+   "turns": 269,
+   "inputTokens": 2480,
+   "outputTokens": 538085,
+   "cacheRead": 63050873,
+   "sessions": 7,
+   "model": "Opus 5"
+  },
+  "2026-08-15": {
+   "turns": 9,
+   "inputTokens": 172,
+   "outputTokens": 7251,
+   "cacheRead": 400300,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-08-16": {
+   "turns": 5,
+   "inputTokens": 30,
+   "outputTokens": 957,
+   "cacheRead": 37422,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-08-17": {
+   "turns": 508,
+   "inputTokens": 2590,
+   "outputTokens": 898503,
+   "cacheRead": 210686169,
+   "sessions": 8,
+   "model": "Fable 5"
+  },
+  "2026-08-18": {
+   "turns": 806,
+   "inputTokens": 2912,
+   "outputTokens": 1160241,
+   "cacheRead": 462410999,
+   "sessions": 7,
+   "model": "Fable 5"
+  },
+  "2026-08-19": {
+   "turns": 878,
+   "inputTokens": 3246,
+   "outputTokens": 1295555,
+   "cacheRead": 348110924,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-20": {
+   "turns": 521,
+   "inputTokens": 1996,
+   "outputTokens": 689308,
+   "cacheRead": 342026964,
+   "sessions": 8,
+   "model": "Fable 5"
+  },
+  "2026-08-21": {
+   "turns": 1092,
+   "inputTokens": 3540,
+   "outputTokens": 1211882,
+   "cacheRead": 435250624,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-22": {
+   "turns": 6,
+   "inputTokens": 90,
+   "outputTokens": 5810,
+   "cacheRead": 215018,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-08-23": {
+   "turns": 13,
+   "inputTokens": 190,
+   "outputTokens": 10142,
+   "cacheRead": 411391,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-08-24": {
+   "turns": 1055,
+   "inputTokens": 3784,
+   "outputTokens": 1415635,
+   "cacheRead": 507352232,
+   "sessions": 10,
+   "model": "Fable 5"
+  },
+  "2026-08-25": {
+   "turns": 703,
+   "inputTokens": 2548,
+   "outputTokens": 734143,
+   "cacheRead": 312723547,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-26": {
+   "turns": 870,
+   "inputTokens": 3176,
+   "outputTokens": 1150242,
+   "cacheRead": 378120974,
+   "sessions": 12,
+   "model": "Fable 5"
+  },
+  "2026-08-27": {
+   "turns": 236,
+   "inputTokens": 790,
+   "outputTokens": 456720,
+   "cacheRead": 82436289,
+   "sessions": 6,
+   "model": "Opus 5"
+  },
+  "2026-08-28": {
+   "turns": 405,
+   "inputTokens": 1482,
+   "outputTokens": 1247278,
+   "cacheRead": 94758818,
+   "sessions": 9,
+   "model": "Fable 5"
+  },
+  "2026-08-29": {
+   "turns": 4,
+   "inputTokens": 0,
+   "outputTokens": 0,
+   "cacheRead": 0,
+   "sessions": 4
+  },
+  "2026-08-30": {
+   "turns": 1,
+   "inputTokens": 0,
+   "outputTokens": 0,
+   "cacheRead": 0,
+   "sessions": 1
+  },
+  "2026-08-31": {
+   "turns": 401,
+   "inputTokens": 1594,
+   "outputTokens": 530724,
+   "cacheRead": 139416192,
+   "sessions": 8,
+   "model": "Fable 5"
+  },
+  "2026-09-01": {
+   "turns": 11,
+   "inputTokens": 190,
+   "outputTokens": 14994,
+   "cacheRead": 422563,
+   "sessions": 2,
+   "model": "Haiku 4.5"
+  },
+  "2026-09-02": {
+   "turns": 418,
+   "inputTokens": 8256,
+   "outputTokens": 616566,
+   "cacheRead": 111922927,
+   "sessions": 39,
+   "model": "Opus 5"
+  },
+  "2026-09-03": {
+   "turns": 594,
+   "inputTokens": 42607,
+   "outputTokens": 951287,
+   "cacheRead": 195685100,
+   "sessions": 19,
+   "model": "Fable 5.1"
+  },
+  "2026-09-04": {
+   "turns": 947,
+   "inputTokens": 97539,
+   "outputTokens": 1947041,
+   "cacheRead": 452054228,
+   "sessions": 30,
+   "model": "Fable 5.1"
+  },
+  "2026-09-05": {
+   "sessions": 4,
+   "turns": 6,
+   "inputTokens": 52,
+   "outputTokens": 3499,
+   "cacheRead": 100030,
+   "model": "Haiku 4.5"
+  },
+  "2026-09-06": {
+   "sessions": 2,
+   "turns": 4,
+   "inputTokens": 40,
+   "outputTokens": 2228,
+   "cacheRead": 50000,
+   "model": "Haiku 4.5"
+  },
+  "2026-09-07": {
+   "sessions": 2,
+   "turns": 2,
+   "inputTokens": 0,
+   "outputTokens": 0,
+   "cacheRead": 0
+  },
+  "2026-09-08": {
+   "sessions": 8,
+   "turns": 128,
+   "inputTokens": 1427,
+   "outputTokens": 121685,
+   "cacheRead": 18137457,
+   "model": "Opus 5"
+  },
+  "2026-09-09": {
+   "sessions": 7,
+   "turns": 399,
+   "inputTokens": 11580,
+   "outputTokens": 713125,
+   "cacheRead": 166096830,
+   "model": "Fable 5.1"
+  },
+  "2026-09-10": {
+   "sessions": 4,
+   "turns": 216,
+   "inputTokens": 7914,
+   "outputTokens": 409850,
+   "cacheRead": 140390074,
+   "model": "Fable 5.1"
+  }
+ }
+}
