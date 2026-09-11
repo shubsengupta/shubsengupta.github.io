@@ -1,8 +1,8 @@
 - name: letmepee
   year: 2026
   blurb: A macOS menu-bar alarm that arms the laptop's accelerometer so you can leave it at the café table. Sirens, air horns, and a Touch ID disarm.
-  link: null
-  linkLabel: null
+  link: https://x.com/shubsengupta/status/2095878178841522283
+  linkLabel: the video
 - name: Fix with Agent
   year: 2026
   blurb: Not on a roadmap, not a ticket. Customer.io's agent got a skill to fix broken Liquid, and a customer called it "living in the future" within days.
